@@ -16,6 +16,7 @@ input:focus {
   justify-content: center;
   font-size: 2vmin;
   color: white;
+  padding-top: 50px;
   margin-bottom: 50px;
 }
 
@@ -76,9 +77,6 @@ input:focus {
   color: yellow;
 }
 
-.img-input-without-file {
-}
-
 .img-input-text {
   text-align: center;
   margin-left: 5%;
@@ -93,14 +91,20 @@ input:focus {
   padding-bottom: 50px;
 }
 
+
 .ascii-player {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
 }
 
-.preformatted {
+.loading-screen {
+  font-size: 1.5vw;
+  position: absolute;
+  left: 25%;
+  top: 50%;
 }
 
 .audio-player {
