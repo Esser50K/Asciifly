@@ -88,9 +88,8 @@ def find_best_audio_quality_url(video_info: dict) -> dict:
     preferred_resolutions = [44100, 48000]
     found_formats = {}
     for format in video_info["formats"]:
-        if format["acodec"] != "" and format["vcodec"] == "":
+        if format["acodec"] != "":
             codec = format["acodec"]
-            # height because it basically defines resolution. e.g. 640x480 -> 480p
             resolution = format["asr"]
             fps = format["fps"]
             found_formats["%s_%s_%s" % (codec, resolution, fps)] = format
