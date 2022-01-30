@@ -30,6 +30,18 @@ function App() {
     `    __                      __ _                            \n   / /   ____   ____ _ ____/ /(_)____   ____ _              \n  / /   / __ \\ / __ \`// __  // // __ \\ / __ \`/              \n / /___/ /_/ // /_/ // /_/ // // / / // /_/ /  _    _    _  \n/_____/\\____/ \\__,_/ \\__,_//_//_/ /_/ \\__, /  (_)  (_)  (_) \n                                     /____/                 \n`
   ]
 
+  const isHttps = () => {
+    return window.location.protocol.startsWith("https")
+  }
+
+  const getUrl = () => {
+    if (window.location.host.includes(":")) {
+      return window.location.host.split(":")[0] + ":8080"
+    }
+
+    return window.location.host
+  }
+
   useEffect(() => {
     if (imgInput.current === null) {
       return
@@ -116,7 +128,7 @@ function App() {
       const base64String = window.btoa(new Uint8Array(arrBuffer).reduce(function (data, byte) {
         return data + String.fromCharCode(byte);
       }, ''));
-      const resp = await fetch("http://127.0.0.1:8080/img", { method: "POST", body: base64String })
+      const resp = await fetch(getUrl() + "/img", { method: "POST", body: base64String })
       if (resp.status !== 200) {
         console.error("error uploading image:", await resp.text())
         alert("error processing image")
@@ -146,7 +158,7 @@ function App() {
     const base64String = window.btoa(new Uint8Array(await f.arrayBuffer()).reduce(function (data, byte) {
       return data + String.fromCharCode(byte);
     }, ''));
-    const resp = await fetch("http://127.0.0.1:8080/img", { method: "POST", body: base64String })
+    const resp = await fetch(getUrl() + "/img", { method: "POST", body: base64String })
     if (resp.status !== 200) {
       console.error("error uploading image:", await resp.text())
       alert("error processing image")
@@ -175,7 +187,7 @@ function App() {
 
   const startPlayingFromURL = (ytUrl: string) => {
     setPlayerState(PlayerState.Loading)
-    const ws = new WebSocket("ws://127.0.0.1:8080/vid")
+    const ws = new WebSocket((isHttps() ? "wss://" : "ws://") + getUrl() + "/vid")
     var firstMsg = false
     var scrolledDown = false;
     ws.onopen = () => {
@@ -324,7 +336,7 @@ function App() {
           >
             <pre
               className={(playerState === PlayerState.Loading ? 'loading-screen' : '')}
-              style={{ lineHeight: lineHeight + "px", fontSize: fontSize + "px" }}
+              style={playerState === PlayerState.Loading ? {} : { lineHeight: lineHeight + "px", fontSize: fontSize + "px" }}
             >
               {playerContent}
             </pre>

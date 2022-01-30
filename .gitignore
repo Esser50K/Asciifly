@@ -1,3 +1,4 @@
 server/__pycache__/
+app/app/node_modules
 *.py[cod]
 *.c
