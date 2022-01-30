@@ -42,6 +42,37 @@ function App() {
     return window.location.protocol + "//" + window.location.host
   }
 
+  const loadYT = (ytUrl: string) => {
+    /* @ts-ignore */
+    if (!window.YT) { // If not, load the script asynchronously
+      // @ts-ignore onYouTubeIframeAPIReady will load the video after the script is loaded
+      window.onYouTubeIframeAPIReady = () => loadVideo(ytUrl);
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
+    }
+  }
+
+  const loadVideo = (ytUrl: string) => {
+    const videoId = ytUrl.split("v=")[1]
+
+    // @ts-ignore the Player object is created uniquely based on the id in props
+    window.YTPlayer = new window.YT.Player('youtube-player', {
+      videoId: videoId,
+      width: '0',
+      height: '0',
+      events: {
+        onReady: (e: any) => {
+          startPlayingFromURL(ytUrl)
+          e.target.playVideo()
+        },
+        onError: (e: any) => console.error("yt player error:", e)
+      },
+    });
+  }
+
   useEffect(() => {
     if (imgInput.current === null) {
       return
@@ -182,14 +213,13 @@ function App() {
     e.preventDefault()
     e.stopPropagation()
     scrollDown()
-    startPlayingFromURL(ytUrl);
+    loadYT(ytUrl)
   }
 
   const startPlayingFromURL = (ytUrl: string) => {
     setPlayerState(PlayerState.Loading)
     const ws = new WebSocket(getUrl().replace(window.location.protocol + "//", (isHttps() ? "wss://" : "ws://")) + "/vid")
     //const ws = new WebSocket("wss://www.asciifly.com/vid")
-    var firstMsg = false
     var firstFrame = false
     var scrolledDown = false
     ws.onopen = () => {
@@ -200,33 +230,14 @@ function App() {
       setPlayerState(PlayerState.Empty)
     }
     ws.onclose = () => {
-      if (!firstMsg) {
+      if (!firstFrame) {
         alert("error processing image")
       }
       setPlayerState(PlayerState.Empty)
     }
     ws.onmessage = async (msg: MessageEvent) => {
+      firstFrame = true
       const decoded = JSON.parse(msg.data);
-      if (!firstMsg) {
-        firstMsg = true
-        setAudioUrl(decoded.frame)
-        setPlayerContent("")
-        setPlayerState(PlayerState.Playing)
-        return
-      }
-
-      if (!firstFrame) {
-        firstFrame = true
-        const player = audioPlayer.current! as HTMLVideoElement
-        // assume no interaction with the browser
-        player.muted = true
-        await player.play()
-        // check if URL was pasted, this way guaranteeing interaction was had
-        if (window.location.search === "") {
-          player.muted = false
-        }
-      }
-
       setLineLength(decoded.width)
       setNLines(decoded.height)
       setPlayerContent(decoded.frame)
@@ -331,29 +342,29 @@ function App() {
               </div>
             </div>
           </div>
-        </div> :
+        </div> : null}
 
-        <div className="player-container">
-          <div
-            className="ascii-player"
-            style={playerState === PlayerState.Loading ? { position: 'relative' } : {}}
+      <div className="player-container">
+        <div
+          className="ascii-player"
+          style={playerState === PlayerState.Loading ? { position: 'relative' } : {}}
+        >
+          <pre
+            className={(playerState === PlayerState.Loading ? 'loading-screen' : '')}
+            style={playerState === PlayerState.Loading ? {} : { lineHeight: lineHeight + "px", fontSize: fontSize + "px" }}
           >
-            <pre
-              className={(playerState === PlayerState.Loading ? 'loading-screen' : '')}
-              style={playerState === PlayerState.Loading ? {} : { lineHeight: lineHeight + "px", fontSize: fontSize + "px" }}
-            >
-              {playerContent}
-            </pre>
-          </div>
-          {audioUrl !== "" ?
-            <div className="audio-player">
-              <video ref={audioPlayer}>
-                <source src={audioUrl} type="audio/webm"></source>
-              </video>
-            </div> :
-            null}
+            {playerContent}
+          </pre>
         </div>
-      }
+        {audioUrl !== "" && false ?
+          <div className="audio-player">
+            <video ref={audioPlayer}>
+              <source src={audioUrl} type="audio/webm"></source>
+            </video>
+          </div> :
+          null}
+        <div id='youtube-player'></div>
+      </div>
     </div>
   );
 }

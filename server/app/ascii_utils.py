@@ -27,10 +27,7 @@ def asciify_yt_video(yt_url: str, width=400):
     options = {}
     Y = youtube_dl.YoutubeDL(options)
     info_dict = Y.extract_info(yt_url, download=False)
-    best_video_format = find_best_video_quality_url(info_dict)
-    best_audio_format = find_best_audio_quality_url(info_dict)
-    yield best_audio_format["url"], 0, 0
-    
+    best_video_format = find_best_video_quality_url(info_dict)    
     
     try:
         video = cv2.VideoCapture(best_video_format["url"])
@@ -80,26 +77,6 @@ def find_best_video_quality_url(video_info: dict) -> dict:
     for resolution in preferred_resolutions[1:]:
         for format in found_formats.values():
             if resolution == format["height"]:
-                return format
-            
-    raise Exception("format not found")
-
-def find_best_audio_quality_url(video_info: dict) -> dict:
-    preferred_resolutions = [44100, 48000]
-    found_formats = {}
-    for format in video_info["formats"]:
-        if format["acodec"] != "":
-            codec = format["acodec"]
-            resolution = format["asr"]
-            fps = format["fps"]
-            found_formats["%s_%s_%s" % (codec, resolution, fps)] = format
-            
-            if resolution == preferred_resolutions[0]:
-                return format
-            
-    for resolution in preferred_resolutions[1:]:
-        for format in found_formats.values():
-            if resolution == format["asr"]:
                 return format
             
     raise Exception("format not found")
