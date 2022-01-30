@@ -189,7 +189,8 @@ function App() {
     setPlayerState(PlayerState.Loading)
     const ws = new WebSocket(getUrl().replace(window.location.protocol + "//", (isHttps() ? "wss://" : "ws://")) + "/vid")
     var firstMsg = false
-    var scrolledDown = false;
+    var firstFrame = false
+    var scrolledDown = false
     ws.onopen = () => {
       ws.send(JSON.stringify({ url: ytUrl }))
     }
@@ -210,8 +211,12 @@ function App() {
         setAudioUrl(decoded.frame)
         setPlayerContent("")
         setPlayerState(PlayerState.Playing)
-        const player = audioPlayer.current! as HTMLVideoElement
+        return
+      }
 
+      if (!firstFrame) {
+        firstFrame = true
+        const player = audioPlayer.current! as HTMLVideoElement
         // assume no interaction with the browser
         player.muted = true
         player.play()
@@ -219,9 +224,7 @@ function App() {
         if (window.location.search === "") {
           player.muted = false
         }
-        return
       }
-
 
       setLineLength(decoded.width)
       setNLines(decoded.height)
