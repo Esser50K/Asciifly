@@ -28,11 +28,30 @@ function App() {
   ]
 
   useEffect(() => {
+    if (imgInput.current === null) {
+      return
+    }
+
     const div = imgInput.current! as HTMLDivElement
     div.addEventListener('dragenter', handleDragIn)
     div.addEventListener('dragleave', handleDragOut)
     div.addEventListener('dragover', handleDrag)
     div.addEventListener('drop', handleDrop)
+
+    if (window.location.pathname === "/watch" && window.location.search !== "") {
+      new URLSearchParams(window.location.search).forEach((v, k) => {
+        if (k !== "v") {
+          return
+        }
+
+        scrollDown()
+        window.addEventListener('click', () => {
+          const player = audioPlayer.current! as HTMLVideoElement
+          player.muted = false
+        })
+        startPlayingFromURL(v);
+      })
+    }
 
     return () => {
       div.removeEventListener('dragenter', handleDragIn)
@@ -144,10 +163,12 @@ function App() {
   const onYTUrlSubmit = (e: FormEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    const scrollingElement = (document.scrollingElement || document.body);
-    scrollingElement.scrollTop = scrollingElement.scrollHeight;
-    setPlayerState(PlayerState.Loading)
+    scrollDown()
+    startPlayingFromURL(ytUrl);
+  }
 
+  const startPlayingFromURL = (ytUrl: string) => {
+    setPlayerState(PlayerState.Loading)
     const ws = new WebSocket("ws://127.0.0.1:8080/vid")
     var firstMsg = false
     var scrolledDown = false;
@@ -172,7 +193,11 @@ function App() {
         setPlayerContent("")
         setPlayerState(PlayerState.Playing)
         const player = audioPlayer.current! as HTMLVideoElement
+        player.muted = true
         player.play()
+        try {
+          player.muted = false
+        } catch (e) { }
         return
       }
 
