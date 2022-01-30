@@ -19,6 +19,9 @@ function App() {
   const [playerState, setPlayerState] = useState(PlayerState.Empty)
   const [lineLength, setLineLength] = useState(0)
   const [nLines, setNLines] = useState(0)
+  const [lineHeight, setLineHeight] = useState(0)
+  const [fontSize, setFontSize] = useState(0)
+  const [windowSize, setWindowSize] = useState(0)
 
   const supportedImageTypes = ["image/jpeg", "image/jpg", "image/png"]
   const loading = [
@@ -38,6 +41,8 @@ function App() {
     div.addEventListener('dragover', handleDrag)
     div.addEventListener('drop', handleDrop)
 
+    const setSize = () => { setWindowSize(window.innerWidth) }
+    window.addEventListener('resize', setSize)
     if (window.location.pathname === "/watch" && window.location.search !== "") {
       new URLSearchParams(window.location.search).forEach((v, k) => {
         if (k !== "v") {
@@ -58,6 +63,7 @@ function App() {
       div.removeEventListener('dragleave', handleDragOut)
       div.removeEventListener('dragover', handleDrag)
       div.removeEventListener('drop', handleDrop)
+      window.removeEventListener('resize', setSize)
     }
   }, [])
 
@@ -193,11 +199,14 @@ function App() {
         setPlayerContent("")
         setPlayerState(PlayerState.Playing)
         const player = audioPlayer.current! as HTMLVideoElement
+
+        // assume no interaction with the browser
         player.muted = true
         player.play()
-        try {
+        // check if URL was pasted, this way guaranteeing interaction was had
+        if (window.location.search === "") {
           player.muted = false
-        } catch (e) { }
+        }
         return
       }
 
@@ -225,12 +234,38 @@ function App() {
     setLoadingIdx((loadingIdx + 1) % loading.length)
   }
 
-  // this is the character ratio of a base monospace font
-  const characterRatio = 5 / 3
-  const windowPortion = 0.9
-  const ratio = lineLength / nLines
-  const lineHeight = ((window.innerHeight / nLines)) * windowPortion
-  const fontSize = (((window.innerHeight * ratio) / lineLength) * characterRatio) * windowPortion
+  const adjustPlayerSize = () => {
+    if (nLines === 0 || lineLength === 0) {
+      return
+    }
+
+    const windowPortion = 0.9
+
+    let newLineHeight = 0
+    let newFontSize = 0
+    const greaterWidth = window.innerWidth > window.innerHeight
+    if (greaterWidth) {
+      // this is the character ratio of a base monospace font
+      const characterRatio = 5 / 3
+      const ratio = lineLength / nLines
+      newLineHeight = ((window.innerHeight / nLines)) * windowPortion
+      newFontSize = (((window.innerHeight * ratio) / lineLength) * characterRatio) * windowPortion
+
+    } else {
+      const characterRatio = 3 / 5
+      const ratio = nLines / lineLength
+      newFontSize = ((window.innerWidth) / lineLength) * windowPortion
+      newLineHeight = (((window.innerHeight * ratio) / nLines) * characterRatio) * windowPortion
+    }
+
+    setLineHeight(newLineHeight)
+    setFontSize(newFontSize)
+  }
+
+  useEffect(adjustPlayerSize, [windowSize])
+  if (lineHeight === 0) {
+    adjustPlayerSize()
+  }
 
   // eslint-disable-next-line
   //const title = `     **                     ** ** ********  **         \r\n    ****                   \/\/ \/\/ \/**\/\/\/\/\/  \/**  **   **\r\n   **\/\/**    ******  *****  ** **\/**       \/** \/\/** ** \r\n  **  \/\/**  **\/\/\/\/  **\/\/\/**\/**\/**\/*******  \/**  \/\/***  \r\n **********\/\/***** \/**  \/\/ \/**\/**\/**\/\/\/\/   \/**   \/**   \r\n\/**\/\/\/\/\/\/** \/\/\/\/\/**\/**   **\/**\/**\/**       \/**   **    \r\n\/**     \/** ****** \/\/***** \/**\/**\/**       ***  **     \r\n\/\/      \/\/ \/\/\/\/\/\/   \/\/\/\/\/  \/\/ \/\/ \/\/       \/\/\/  \/\/      `
