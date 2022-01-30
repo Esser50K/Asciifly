@@ -76,15 +76,14 @@ def find_best_video_quality_url(video_info: dict) -> dict:
             fps = format["fps"]
             found_formats["%s_%s_%s" % (codec, resolution, fps)] = format
             
-            # if resolution == preferred_resolutions[0]:
-            #     return format
-    return found_formats
+            if resolution == preferred_resolutions[0]:
+                return format
+
     for resolution in preferred_resolutions[1:]:
         for format in found_formats.values():
             if resolution == format["height"]:
                 return format
             
-    pprint.pprint("found_formats")
     raise Exception("format not found")
 
 def find_best_audio_quality_url(video_info: dict) -> dict:
