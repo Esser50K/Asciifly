@@ -1,0 +1,9 @@
+version: '3.3'
+services:
+  server:
+    image: asciifly:latest
+    deploy:
+      mode: replicated
+      replicas: 20
+    ports:
+      - 8888:8080
