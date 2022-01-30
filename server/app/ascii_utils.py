@@ -63,13 +63,11 @@ def asciify_yt_video(yt_url: str, width=400):
     except Exception as e:
         print("error streaming video:", e)
 
-        
-
 def find_best_video_quality_url(video_info: dict) -> dict:
     preferred_resolutions = [144, 240]
     found_formats = {}
     for format in video_info["formats"]:
-        if format["vcodec"] != "":
+        if format["vcodec"] != "" and format["acodec"] == "":
             codec = format["vcodec"]
             # height because it basically defines resolution. e.g. 640x480 -> 480p
             resolution = format["height"]
@@ -90,7 +88,7 @@ def find_best_audio_quality_url(video_info: dict) -> dict:
     preferred_resolutions = [44100, 48000]
     found_formats = {}
     for format in video_info["formats"]:
-        if format["acodec"] != "":
+        if format["acodec"] != "" and format["vcodec"] == "":
             codec = format["acodec"]
             # height because it basically defines resolution. e.g. 640x480 -> 480p
             resolution = format["asr"]

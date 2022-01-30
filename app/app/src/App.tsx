@@ -188,6 +188,7 @@ function App() {
   const startPlayingFromURL = (ytUrl: string) => {
     setPlayerState(PlayerState.Loading)
     const ws = new WebSocket(getUrl().replace(window.location.protocol + "//", (isHttps() ? "wss://" : "ws://")) + "/vid")
+    //const ws = new WebSocket("wss://www.asciifly.com/vid")
     var firstMsg = false
     var firstFrame = false
     var scrolledDown = false
@@ -204,7 +205,7 @@ function App() {
       }
       setPlayerState(PlayerState.Empty)
     }
-    ws.onmessage = (msg: MessageEvent) => {
+    ws.onmessage = async (msg: MessageEvent) => {
       const decoded = JSON.parse(msg.data);
       if (!firstMsg) {
         firstMsg = true
@@ -219,7 +220,7 @@ function App() {
         const player = audioPlayer.current! as HTMLVideoElement
         // assume no interaction with the browser
         player.muted = true
-        player.play()
+        await player.play()
         // check if URL was pasted, this way guaranteeing interaction was had
         if (window.location.search === "") {
           player.muted = false
