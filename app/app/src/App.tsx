@@ -4,6 +4,7 @@ import './App.css';
 enum PlayerState {
   Empty,
   Loading,
+  Loaded,
   Playing
 }
 
@@ -59,14 +60,19 @@ function App() {
     const videoId = ytUrl.split("v=")[1]
 
     // @ts-ignore the Player object is created uniquely based on the id in props
-    window.YTPlayer = new window.YT.Player('youtube-player', {
+    const player = new window.YT.Player('youtube-player', {
       videoId: videoId,
       width: '0',
       height: '0',
+      muted: true,
       events: {
         onReady: (e: any) => {
           startPlayingFromURL(ytUrl)
+          // assume no interaction has taken place
+          e.target.mute()
           e.target.playVideo()
+          // @ts-ignore
+          window.YTPlayer = e.target;
         },
         onError: (e: any) => console.error("yt player error:", e)
       },
@@ -94,10 +100,14 @@ function App() {
 
         scrollDown()
         window.addEventListener('click', () => {
-          const player = audioPlayer.current! as HTMLVideoElement
-          player.muted = false
+          // @ts-ignore
+          if (window.YTPlayer && window.YTPlayer.isMuted()) {
+            // @ts-ignore
+            window.YTPlayer.unMute();
+          }
         })
-        startPlayingFromURL(v);
+        setPlayerState(PlayerState.Loading)
+        loadYT("https://www.youtube.com/watch?v=" + v);
       })
     }
 
@@ -212,12 +222,11 @@ function App() {
   const onYTUrlSubmit = (e: FormEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    scrollDown()
+    setPlayerState(PlayerState.Loading)
     loadYT(ytUrl)
   }
 
   const startPlayingFromURL = (ytUrl: string) => {
-    setPlayerState(PlayerState.Loading)
     const ws = new WebSocket(getUrl().replace(window.location.protocol + "//", (isHttps() ? "wss://" : "ws://")) + "/vid")
     //const ws = new WebSocket("wss://www.asciifly.com/vid")
     var firstFrame = false
@@ -236,15 +245,19 @@ function App() {
       setPlayerState(PlayerState.Empty)
     }
     ws.onmessage = async (msg: MessageEvent) => {
-      firstFrame = true
       const decoded = JSON.parse(msg.data);
       setLineLength(decoded.width)
       setNLines(decoded.height)
       setPlayerContent(decoded.frame)
-      if (!scrolledDown) {
+      if (firstFrame && !scrolledDown) {
         scrollDown()
         scrolledDown = true
       }
+      if (!firstFrame) {
+        firstFrame = true
+        setPlayerState(PlayerState.Playing)
+      }
+
     }
   }
 
