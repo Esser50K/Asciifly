@@ -67,7 +67,7 @@ def find_best_video_quality_url(video_info: dict) -> dict:
     preferred_resolutions = [144, 240]
     found_formats = {}
     for format in video_info["formats"]:
-        if format["vcodec"] != "" and format["acodec"] == "":
+        if format["vcodec"] != "":
             codec = format["vcodec"]
             # height because it basically defines resolution. e.g. 640x480 -> 480p
             resolution = format["height"]
