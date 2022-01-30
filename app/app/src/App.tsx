@@ -73,6 +73,7 @@ function App() {
           e.target.playVideo()
           // @ts-ignore
           window.YTPlayer = e.target;
+          e.target.unMute()
         },
         onError: (e: any) => console.error("yt player error:", e)
       },
