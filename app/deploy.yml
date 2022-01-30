@@ -1,6 +1,6 @@
 version: '3.3'
 services:
-  server:
+  ui:
     image: asciifly_ui:latest
     deploy:
       mode: replicated
