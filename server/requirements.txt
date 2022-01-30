@@ -3,4 +3,7 @@ flask_cors
 flask_sockets
 gevent
 cython
+numpy==1.19.3
+opencv-python==4.5.4.60
+youtube_dl
 Werkzeug~=1.0.1
