@@ -35,11 +35,11 @@ function App() {
   }
 
   const getUrl = () => {
-    if (window.location.host.includes(":")) {
-      return window.location.host.split(":")[0] + ":8080"
+    if (window.location.host.startsWith("localhost")) {
+      return window.location.protocol + "//" + window.location.host.split(":")[0] + ":8080"
     }
 
-    return window.location.host
+    return window.location.protocol + "//" + window.location.host
   }
 
   useEffect(() => {
@@ -187,7 +187,7 @@ function App() {
 
   const startPlayingFromURL = (ytUrl: string) => {
     setPlayerState(PlayerState.Loading)
-    const ws = new WebSocket((isHttps() ? "wss://" : "ws://") + getUrl() + "/vid")
+    const ws = new WebSocket(getUrl().replace(window.location.protocol + "//", (isHttps() ? "wss://" : "ws://")) + "/vid")
     var firstMsg = false
     var scrolledDown = false;
     ws.onopen = () => {
