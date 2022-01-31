@@ -10,9 +10,7 @@ enum PlayerState {
 
 function App() {
   const imgInput = useRef(null)
-  const audioPlayer = useRef(null)
   const [ytUrl, setYtUrl] = useState("")
-  const [audioUrl, setAudioUrl] = useState("")
   const [playerContent, setPlayerContent] = useState("")
   const [fileIsHovering, setFileIsHovering] = useState(false)
   const [wrongFileType, setWrongFileType] = useState(false)
@@ -22,8 +20,7 @@ function App() {
   const [nLines, setNLines] = useState(0)
   const [lineHeight, setLineHeight] = useState(0)
   const [fontSize, setFontSize] = useState(0)
-  const [windowSize, setWindowSize] = useState(0)
-  const [userInteracted, setUserInteracted] = useState(false)
+  const [windowSize, setWindowSize] = useState([0, 0])
 
   const supportedImageTypes = ["image/jpeg", "image/jpg", "image/png"]
   const loading = [
@@ -91,7 +88,7 @@ function App() {
     div.addEventListener('dragover', handleDrag)
     div.addEventListener('drop', handleDrop)
 
-    const setSize = () => { setWindowSize(window.innerWidth) }
+    const setSize = () => { setWindowSize([window.innerWidth, window.innerHeight]) }
     window.addEventListener('resize', setSize)
     if (window.location.pathname === "/watch" && window.location.search !== "") {
       new URLSearchParams(window.location.search).forEach((v, k) => {
@@ -101,8 +98,6 @@ function App() {
 
         scrollDown()
         window.addEventListener('click', () => {
-          setUserInteracted(true);
-
           // @ts-ignore
           if (window.YTPlayer && window.YTPlayer.isMuted()) {
             // @ts-ignore
@@ -284,30 +279,27 @@ function App() {
       return
     }
 
-    const windowPortion = 0.9
-
     let newLineHeight = 0
     let newFontSize = 0
-    const greaterWidth = window.innerWidth > window.innerHeight
-    if (greaterWidth) {
-      // this is the character ratio of a base monospace font
-      const characterRatio = 5 / 3
-      const ratio = lineLength / nLines
-      newLineHeight = ((window.innerHeight / nLines)) * windowPortion
-      newFontSize = (((window.innerHeight * ratio) / lineLength) * characterRatio) * windowPortion
 
+    // this is the character ratio of a base monospace font
+    const characterRatio = 5 / 3
+    const windowPortion = 0.9
+    const ratio = lineLength / nLines
+    const limiter = (lineLength / window.innerWidth) > (nLines / window.innerHeight) ? window.innerWidth : window.innerHeight
+    if (limiter === window.innerHeight) {
+      newLineHeight = (limiter / nLines) * windowPortion
+      newFontSize = (((limiter * ratio) / lineLength) * characterRatio) * windowPortion
     } else {
-      const characterRatio = 3 / 5
-      const ratio = nLines / lineLength
-      newFontSize = ((window.innerWidth) / lineLength) * windowPortion
-      newLineHeight = (((window.innerHeight * ratio) / nLines) * characterRatio) * windowPortion
+      newFontSize = ((limiter / lineLength) * characterRatio) * windowPortion
+      newLineHeight = ((limiter * (1 / ratio)) / nLines) * windowPortion
     }
 
     setLineHeight(newLineHeight)
     setFontSize(newFontSize)
   }
 
-  useEffect(adjustPlayerSize, [windowSize])
+  useEffect(() => { adjustPlayerSize() }, [windowSize])
   if (lineHeight === 0) {
     adjustPlayerSize()
   }
@@ -374,13 +366,6 @@ function App() {
             {playerContent}
           </pre>
         </div>
-        {audioUrl !== "" && false ?
-          <div className="audio-player">
-            <video ref={audioPlayer}>
-              <source src={audioUrl} type="audio/webm"></source>
-            </video>
-          </div> :
-          null}
         <div id='youtube-player'></div>
       </div>
     </div>
