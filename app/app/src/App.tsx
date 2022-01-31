@@ -302,6 +302,11 @@ function App() {
       newLineHeight = ((limiter * (1 / ratio)) / nLines) * windowPortion
     }
 
+    if (newLineHeight < 1) {
+      newLineHeight = 1
+      newFontSize = characterRatio
+    }
+
     setLineHeight(newLineHeight)
     setFontSize(newFontSize)
   }
