@@ -236,8 +236,6 @@ function App() {
     var scrolledDown = false
     ws.onopen = () => {
       ws.send(JSON.stringify({ url: ytUrl }))
-      // @ts-ignore
-      window.YTPlayer.playVideo()
     }
     ws.onerror = () => {
       alert("error processing image")
@@ -259,6 +257,8 @@ function App() {
         scrolledDown = true
       }
       if (!firstFrame) {
+        // @ts-ignore
+        window.YTPlayer.playVideo()
         firstFrame = true
         setPlayerState(PlayerState.Playing)
       }
