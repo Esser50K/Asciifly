@@ -72,7 +72,6 @@ function App() {
           if (mute) {
             e.target.mute()
           }
-          e.target.playVideo()
           // @ts-ignore
           window.YTPlayer = e.target;
         },
@@ -237,6 +236,8 @@ function App() {
     var scrolledDown = false
     ws.onopen = () => {
       ws.send(JSON.stringify({ url: ytUrl }))
+      // @ts-ignore
+      window.YTPlayer.playVideo()
     }
     ws.onerror = () => {
       alert("error processing image")
