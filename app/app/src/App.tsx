@@ -69,6 +69,8 @@ function App() {
           if (mute) {
             e.target.mute()
           }
+
+          e.target.seekTo(0)
           // @ts-ignore
           window.YTPlayer = e.target;
         },
