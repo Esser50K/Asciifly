@@ -6,4 +6,4 @@ services:
       mode: replicated
       replicas: 10
     ports:
-      - 8080:8080
+      - 8081:8080
