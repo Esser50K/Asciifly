@@ -23,6 +23,7 @@ function App() {
   const [lineHeight, setLineHeight] = useState(0)
   const [fontSize, setFontSize] = useState(0)
   const [windowSize, setWindowSize] = useState(0)
+  const [userInteracted, setUserInteracted] = useState(false)
 
   const supportedImageTypes = ["image/jpeg", "image/jpg", "image/png"]
   const loading = [
@@ -43,11 +44,11 @@ function App() {
     return window.location.protocol + "//" + window.location.host
   }
 
-  const loadYT = (ytUrl: string) => {
+  const loadYT = (ytUrl: string, mute: boolean) => {
     /* @ts-ignore */
     if (!window.YT) { // If not, load the script asynchronously
       // @ts-ignore onYouTubeIframeAPIReady will load the video after the script is loaded
-      window.onYouTubeIframeAPIReady = () => loadVideo(ytUrl);
+      window.onYouTubeIframeAPIReady = () => loadVideo(ytUrl, mute);
       const tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
 
@@ -56,7 +57,7 @@ function App() {
     }
   }
 
-  const loadVideo = (ytUrl: string) => {
+  const loadVideo = (ytUrl: string, mute: boolean) => {
     const videoId = ytUrl.split("v=")[1]
 
     // @ts-ignore the Player object is created uniquely based on the id in props
@@ -68,12 +69,12 @@ function App() {
       events: {
         onReady: (e: any) => {
           startPlayingFromURL(ytUrl)
-          // assume no interaction has taken place
-          e.target.mute()
+          if (mute) {
+            e.target.mute()
+          }
           e.target.playVideo()
           // @ts-ignore
           window.YTPlayer = e.target;
-          e.target.unMute()
         },
         onError: (e: any) => console.error("yt player error:", e)
       },
@@ -101,6 +102,8 @@ function App() {
 
         scrollDown()
         window.addEventListener('click', () => {
+          setUserInteracted(true);
+
           // @ts-ignore
           if (window.YTPlayer && window.YTPlayer.isMuted()) {
             // @ts-ignore
@@ -108,7 +111,7 @@ function App() {
           }
         })
         setPlayerState(PlayerState.Loading)
-        loadYT("https://www.youtube.com/watch?v=" + v);
+        loadYT("https://www.youtube.com/watch?v=" + v, true);
       })
     }
 
@@ -224,7 +227,7 @@ function App() {
     e.preventDefault()
     e.stopPropagation()
     setPlayerState(PlayerState.Loading)
-    loadYT(ytUrl)
+    loadYT(ytUrl, false)
   }
 
   const startPlayingFromURL = (ytUrl: string) => {
