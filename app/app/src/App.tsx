@@ -227,6 +227,7 @@ function App() {
   const startPlayingFromURL = (ytUrl: string) => {
     const ws = new WebSocket(getUrl().replace(window.location.protocol + "//", (isHttps() ? "wss://" : "ws://")) + "/vid")
     //const ws = new WebSocket("wss://www.asciifly.com/vid")
+    var startedPlaying = false
     var firstFrame = false
     var scrolledDown = false
     ws.onopen = () => {
@@ -243,21 +244,25 @@ function App() {
       setPlayerState(PlayerState.Empty)
     }
     ws.onmessage = async (msg: MessageEvent) => {
-      const decoded = JSON.parse(msg.data);
-      setLineLength(decoded.width)
-      setNLines(decoded.height)
-      setPlayerContent(decoded.frame)
+      if (!firstFrame) {
+        setPlayerState(PlayerState.Playing)
+        // @ts-ignore
+        window.YTPlayer.playVideo()
+        await new Promise(s => setTimeout(s, 2000))
+        startedPlaying = true
+        firstFrame = true
+        return
+      }
       if (firstFrame && !scrolledDown) {
         scrollDown()
         scrolledDown = true
       }
-      if (!firstFrame) {
-        // @ts-ignore
-        window.YTPlayer.playVideo()
-        firstFrame = true
-        setPlayerState(PlayerState.Playing)
+      if (startedPlaying) {
+        const decoded = JSON.parse(msg.data);
+        setLineLength(decoded.width)
+        setNLines(decoded.height)
+        setPlayerContent(decoded.frame)
       }
-
     }
   }
 
