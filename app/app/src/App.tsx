@@ -233,7 +233,7 @@ function App() {
     var firstFrame = false
     var scrolledDown = false
     ws.onopen = () => {
-      ws.send(JSON.stringify({ url: ytUrl }))
+      ws.send(JSON.stringify({ url: ytUrl, width: window.innerWidth / 4 }))
     }
     ws.onerror = () => {
       alert("error processing image")

@@ -8,10 +8,17 @@ import pyximport
 pyximport.install()
 from painter import asciify, invert_chars
 
+MAX_IMG_WIDTH = 600
+MAX_VIDEO_WIDTH = 300
+
 def invert_brightness():
     invert_chars()
 
-def asciify_image(img_data: str, width=600) -> str:
+def asciify_image(img_data: str, width=MAX_IMG_WIDTH) -> str:
+    width = int(width)
+    if width > MAX_IMG_WIDTH:
+        width = MAX_IMG_WIDTH
+
     nparr = np.frombuffer(img_data, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     
@@ -23,7 +30,11 @@ def asciify_image(img_data: str, width=600) -> str:
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     return asciify(frame, width, height), width, height
 
-def asciify_yt_video(yt_url: str, width=300):
+def asciify_yt_video(yt_url: str, width=MAX_VIDEO_WIDTH):
+    width = int(width)
+    if width > MAX_VIDEO_WIDTH:
+        width = MAX_VIDEO_WIDTH
+        
     options = {}
     Y = youtube_dl.YoutubeDL(options)
     info_dict = Y.extract_info(yt_url, download=False)

@@ -39,7 +39,7 @@ def get_updates(ws: WebSocket):
         except Exception as e:
             return BadRequest("video info was not encoded correctly")
     
-        for frame, width, height in asciify_yt_video(video_info["url"]):
+        for frame, width, height in asciify_yt_video(video_info["url"], video_info["width"]):
             try:
                 ws.send(json.dumps({'frame': frame, 'width': width, 'height': height}))
             except Exception as e:
