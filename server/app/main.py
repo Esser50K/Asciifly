@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask_sockets import Sockets
 from geventwebsocket.websocket import WebSocket
 from werkzeug.exceptions import BadRequest
-from ascii_utils import asciify_image, asciify_yt_video, invert_brightness
+from ascii_utils import asciify_image, asciify_yt_video, MAX_IMG_WIDTH
 
 app = Flask(__name__)
 CORS(app)
@@ -20,13 +20,21 @@ DELETE = "DELETE"
 
 @app.route("/img", methods=[POST])
 def upload():
+    req = None
+    try:
+        req = json.loads(request.data)
+    except Exception as e:
+        return BadRequest("image was not encoded correctly")
+    
+    
     img_data = None
     try:
-        img_data = base64.b64decode(request.data)
+        img_data = base64.b64decode(req["img"])
     except Exception as e:
         return BadRequest("image was not encoded correctly")
 
-    ascii_img, width, height = asciify_image(img_data)
+    width = req["width"] if "width" in req.keys() else MAX_IMG_WIDTH
+    ascii_img, width, height = asciify_image(img_data, req["width"])
     return json.dumps({'img': ascii_img, 'width': width, 'height': height})
 
 @sockets.route('/vid')

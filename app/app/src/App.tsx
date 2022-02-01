@@ -169,7 +169,7 @@ function App() {
       const base64String = window.btoa(new Uint8Array(arrBuffer).reduce(function (data, byte) {
         return data + String.fromCharCode(byte);
       }, ''));
-      const resp = await fetch(getUrl() + "/img", { method: "POST", body: base64String })
+      const resp = await fetch(getUrl() + "/img", { method: "POST", body: JSON.stringify({ img: base64String, width: window.innerWidth / 4 }) })
       if (resp.status !== 200) {
         console.error("error uploading image:", await resp.text())
         alert("error processing image")
@@ -199,7 +199,7 @@ function App() {
     const base64String = window.btoa(new Uint8Array(await f.arrayBuffer()).reduce(function (data, byte) {
       return data + String.fromCharCode(byte);
     }, ''));
-    const resp = await fetch(getUrl() + "/img", { method: "POST", body: base64String })
+    const resp = await fetch(getUrl() + "/img", { method: "POST", body: JSON.stringify({ img: base64String, width: window.innerWidth / 4 }) })
     if (resp.status !== 200) {
       console.error("error uploading image:", await resp.text())
       alert("error processing image")
@@ -233,7 +233,7 @@ function App() {
     var firstFrame = false
     var scrolledDown = false
     ws.onopen = () => {
-      ws.send(JSON.stringify({ url: ytUrl, width: window.innerWidth / 4 }))
+      ws.send(JSON.stringify({ url: ytUrl, width: window.innerWidth / 6 }))
     }
     ws.onerror = () => {
       alert("error processing image")
