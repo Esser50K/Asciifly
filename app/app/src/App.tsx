@@ -250,7 +250,7 @@ function App() {
         setPlayerState(PlayerState.Playing)
         // @ts-ignore
         window.YTPlayer.playVideo()
-        await new Promise(s => setTimeout(s, 2000))
+        await new Promise(s => setTimeout(s, 500))
         startedPlaying = true
         firstFrame = true
         return
