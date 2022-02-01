@@ -246,23 +246,23 @@ function App() {
       setPlayerState(PlayerState.Empty)
     }
     ws.onmessage = async (msg: MessageEvent) => {
+      const decoded = JSON.parse(msg.data);
       if (!firstFrame) {
         setPlayerState(PlayerState.Playing)
         startedPlaying = true
         firstFrame = true
-        // @ts-ignore
-        window.YTPlayer.playVideo()
+        setLineLength(decoded.width)
+        setNLines(decoded.height)
+        setPlayerContent(decoded.frame)
         return
       }
 
-      const decoded = JSON.parse(msg.data);
-      setLineLength(decoded.width)
-      setNLines(decoded.height)
       setPlayerContent(decoded.frame)
-
       if (firstFrame && !scrolledDown) {
         scrollDown()
         scrolledDown = true
+        // @ts-ignore
+        await window.YTPlayer.playVideo()
       }
     }
   }
