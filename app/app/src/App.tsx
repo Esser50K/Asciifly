@@ -173,6 +173,7 @@ function App() {
       if (resp.status !== 200) {
         console.error("error uploading image:", await resp.text())
         alert("error processing image")
+        setPlayerState(PlayerState.Empty)
       }
 
       const decoded = await resp.json()
@@ -203,6 +204,7 @@ function App() {
     if (resp.status !== 200) {
       console.error("error uploading image:", await resp.text())
       alert("error processing image")
+      setPlayerState(PlayerState.Empty)
     }
 
     const decoded = await resp.json()
@@ -292,7 +294,8 @@ function App() {
     const characterRatio = 5 / 3
     const windowPortion = 0.9
     const ratio = lineLength / nLines
-    const limiter = (lineLength / window.innerWidth) > (nLines / window.innerHeight) ? window.innerWidth : window.innerHeight
+    const heightLimited = (lineLength / window.innerWidth) < (nLines / window.innerHeight)
+    const limiter = heightLimited ? window.innerHeight : window.innerWidth
     if (limiter === window.innerHeight) {
       newLineHeight = (limiter / nLines) * windowPortion
       newFontSize = (((limiter * ratio) / lineLength) * characterRatio) * windowPortion
