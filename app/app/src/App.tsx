@@ -304,6 +304,13 @@ function App() {
       newLineHeight = ((limiter * (1 / ratio)) / nLines) * windowPortion
     }
 
+    if (newLineHeight < 5) {
+      const adjustedNewLineHeight = (newLineHeight + 1 | 0)
+      const adjustedNewFontSize = newFontSize * (adjustedNewLineHeight / newLineHeight)
+      newLineHeight = adjustedNewLineHeight
+      newFontSize = adjustedNewFontSize
+    }
+
     if (newLineHeight < 1) {
       newLineHeight = 1
       newFontSize = characterRatio
