@@ -75,14 +75,15 @@ function App() {
       muted: true,
       events: {
         onReady: (e: any) => {
-          startPlayingFromURL(ytUrl)
           if (mute) {
             e.target.mute()
           }
 
           e.target.seekTo(0)
+          e.target.pauseVideo()
           // @ts-ignore
           window.YTPlayer = e.target;
+          startPlayingFromURL(ytUrl)
         },
         onError: (e: any) => console.error("yt player error:", e)
       },
@@ -241,7 +242,6 @@ function App() {
   const startPlayingFromURL = (ytUrl: string) => {
     const ws = new WebSocket(getUrl().replace(window.location.protocol + "//", (isHttps() ? "wss://" : "ws://")) + "/vid")
     //const ws = new WebSocket("wss://www.asciifly.com/vid")
-    var startedPlaying = false
     var firstFrame = false
     var scrolledDown = false
     ws.onopen = () => {
@@ -261,7 +261,6 @@ function App() {
       const decoded = JSON.parse(msg.data);
       if (!firstFrame) {
         setPlayerState(PlayerState.Playing)
-        startedPlaying = true
         firstFrame = true
         setLineLength(decoded.width)
         setNLines(decoded.height)
@@ -274,7 +273,7 @@ function App() {
         scrollDown()
         scrolledDown = true
         // @ts-ignore
-        await window.YTPlayer.playVideo()
+        window.YTPlayer.playVideo()
       }
     }
   }
