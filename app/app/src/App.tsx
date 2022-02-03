@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import './App.css';
+import Toast from './components/Toast';
 
 enum PlayerState {
   Empty,
@@ -21,6 +22,7 @@ function App() {
   const [lineHeight, setLineHeight] = useState(0)
   const [fontSize, setFontSize] = useState(0)
   const [windowSize, setWindowSize] = useState([0, 0])
+  const [showToast, setShowToast] = useState(false)
 
   const supportedImageTypes = ["image/jpeg", "image/jpg", "image/png"]
   const loading = [
@@ -90,49 +92,7 @@ function App() {
     });
   }
 
-  useEffect(() => {
-    if (imgInput.current === null) {
-      return
-    }
-
-    const div = imgInput.current! as HTMLDivElement
-    div.addEventListener('dragenter', handleDragIn)
-    div.addEventListener('dragleave', handleDragOut)
-    div.addEventListener('dragover', handleDrag)
-    div.addEventListener('drop', handleDrop)
-
-    const setSize = () => { setWindowSize([window.innerWidth, window.innerHeight]) }
-    window.addEventListener('resize', setSize)
-    if (window.location.pathname === "/watch" && window.location.search !== "") {
-      new URLSearchParams(window.location.search).forEach((v, k) => {
-        if (k !== "v") {
-          return
-        }
-
-        scrollDown()
-        window.addEventListener('click', () => {
-          // @ts-ignore
-          if (window.YTPlayer && window.YTPlayer.isMuted()) {
-            // @ts-ignore
-            window.YTPlayer.unMute();
-          }
-        })
-        setPlayerState(PlayerState.Loading)
-        loadYT("https://www.youtube.com/watch?v=" + v, true);
-      })
-    }
-
-    return () => {
-      div.removeEventListener('dragenter', handleDragIn)
-      div.removeEventListener('dragleave', handleDragOut)
-      div.removeEventListener('dragover', handleDrag)
-      div.removeEventListener('drop', handleDrop)
-      window.removeEventListener('resize', setSize)
-    }
-  }, [])
-
   let dragInCount = 0
-
   const handleDrag = (e: DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -279,6 +239,49 @@ function App() {
   }
 
   useEffect(() => {
+    if (imgInput.current === null) {
+      return
+    }
+
+    const div = imgInput.current! as HTMLDivElement
+    div.addEventListener('dragenter', handleDragIn)
+    div.addEventListener('dragleave', handleDragOut)
+    div.addEventListener('dragover', handleDrag)
+    div.addEventListener('drop', handleDrop)
+
+    const setSize = () => { setWindowSize([window.innerWidth, window.innerHeight]) }
+    window.addEventListener('resize', setSize)
+    if (window.location.pathname === "/watch" && window.location.search !== "") {
+      setShowToast(true);
+      new URLSearchParams(window.location.search).forEach((v, k) => {
+        if (k !== "v") {
+          return
+        }
+
+        scrollDown()
+        window.addEventListener('click', () => {
+          // @ts-ignore
+          if (window.YTPlayer && window.YTPlayer.isMuted()) {
+            // @ts-ignore
+            window.YTPlayer.unMute();
+            setShowToast(false);
+          }
+        })
+        setPlayerState(PlayerState.Loading)
+        loadYT("https://www.youtube.com/watch?v=" + v, true);
+      })
+    }
+
+    return () => {
+      div.removeEventListener('dragenter', handleDragIn)
+      div.removeEventListener('dragleave', handleDragOut)
+      div.removeEventListener('dragover', handleDrag)
+      div.removeEventListener('drop', handleDrop)
+      window.removeEventListener('resize', setSize)
+    }
+  }, [])
+
+  useEffect(() => {
     if (playerState === PlayerState.Loading) {
       setLoadingAnim()
       return
@@ -345,7 +348,7 @@ function App() {
           {title}
         </pre>
       </header>
-
+      {showToast ? <Toast text="tap to unmute"></Toast> : null}
       {playerState === PlayerState.Empty ?
         <div className="input-container">
           <div className="yt-url-input-container">

@@ -1,0 +1,19 @@
+.toast-container {
+    position: fixed;
+    border: 2px white dashed;
+    background-color: black;
+    z-index: 99999;
+}
+
+.top-left {
+	top: 12px;
+	left: 12px;
+	transition: transform .6s ease-in;
+	animation: toast-in-left .7s;
+}
+
+.notification {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 2vmin;
+    padding: 10px;
+}
