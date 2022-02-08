@@ -46,7 +46,7 @@ function App() {
   }
 
   const getUrl = () => {
-    if (window.location.host.startsWith("localhost")) {
+    if (window.location.host.startsWith("localhost") || window.location.host.startsWith("192")) {
       return window.location.protocol + "//" + window.location.host.split(":")[0] + ":8080"
     }
 
@@ -67,6 +67,7 @@ function App() {
   }
 
   const loadVideo = (ytUrl: string, mute: boolean) => {
+    console.info("LOADING VID")
     const videoId = ytUrl.split("v=")[1]
 
     // @ts-ignore the Player object is created uniquely based on the id in props
@@ -81,8 +82,8 @@ function App() {
             e.target.mute()
           }
 
-          e.target.seekTo(0)
-          e.target.pauseVideo()
+          //e.target.seekTo(0)
+          //e.target.pauseVideo()
           // @ts-ignore
           window.YTPlayer = e.target;
           startPlayingFromURL(ytUrl)
@@ -234,6 +235,7 @@ function App() {
         scrolledDown = true
         // @ts-ignore
         window.YTPlayer.playVideo()
+        console.info("PLAYED VIDEO")
       }
     }
   }
@@ -262,6 +264,7 @@ function App() {
         window.addEventListener('click', () => {
           // @ts-ignore
           if (window.YTPlayer && window.YTPlayer.isMuted()) {
+            console.info("UNMUTED")
             // @ts-ignore
             window.YTPlayer.unMute();
             setShowToast(false);
