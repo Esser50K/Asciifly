@@ -20,6 +20,13 @@ input:focus {
   margin-bottom: 50px;
 }
 
+.description {
+  margin-left: 7vw;
+  text-align: left;
+  font-size: 0.8vw;
+  font-family: 'Press Start 2P', cursive;
+}
+
 .input-container {
   display: flex;
   flex-direction: column;
@@ -82,6 +89,7 @@ input:focus {
   margin-left: 5%;
   margin-right: 5%;
   font-size: 10px;
+  line-height: 15px;
 }
 
 .player-container {

@@ -347,16 +347,23 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <pre>
-          {title}
-        </pre>
+        <div>
+          <pre>
+            {title}
+          </pre>
+          <p className='description'>
+            a tool that transforms images and youtube videos into ascii art on the fly
+          </p>
+        </div>
       </header>
-      {showToast ? <Toast text="tap to unmute"></Toast> : null}
+      <div className='description'>
+      </div>
+      {showToast ? <Toast text={isMobile() ? "tap" : "click" + " to unmute"}></Toast> : null}
       {playerState === PlayerState.Empty ?
         <div className="input-container">
           <div className="yt-url-input-container">
             <form className="yt-url-input-form" onSubmit={(e) => { onYTUrlSubmit(e) }}>
-              <label className="yt-url-input-label" htmlFor="yt-url-input-input">Paste Youtube URL here</label>
+              <label className="yt-url-input-label" htmlFor="yt-url-input-input">paste a Youtube URL to asciify it on the fly</label>
               <input id="yt-url-input-input" className="yt-url-input-input" type="text" onChange={(e) => onYTUrlChange(e.target.value)}></input>
             </form>
 
@@ -382,7 +389,7 @@ function App() {
                 <div className="img-input-text">
                   {fileIsHovering ?
                     wrongFileType ? "Unsupported file type" : "Drop the image now"
-                    : "Click to select or drag an image on this box"}
+                    : "Click to select or drag an image on this box to asciify it"}
                 </div>
               </div>
             </div>
