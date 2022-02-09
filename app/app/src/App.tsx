@@ -358,7 +358,7 @@ function App() {
       </header>
       <div className='description'>
       </div>
-      {showToast ? <Toast text={isMobile() ? "tap" : "click" + " to unmute"}></Toast> : null}
+      {showToast ? <Toast text={(isMobile() ? "tap" : "click") + " to unmute"}></Toast> : null}
       {playerState === PlayerState.Empty ?
         <div className="input-container">
           <div className="yt-url-input-container">
