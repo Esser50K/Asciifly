@@ -72,7 +72,7 @@ def asciify_yt_video(yt_url: str, width=MAX_VIDEO_WIDTH):
         print("error streaming video:", e)
 
 def find_best_video_quality_url(video_info: dict) -> dict:
-    preferred_resolutions = [144, 240]
+    preferred_resolutions = [136, 144, 224, 240, 338]
     found_formats = {}
     for format in video_info["formats"]:
         if format["vcodec"] != "":
@@ -90,4 +90,4 @@ def find_best_video_quality_url(video_info: dict) -> dict:
             if resolution == format["height"]:
                 return format
             
-    raise Exception("format not found")
+    raise Exception("no desired resolution found, found resolutions:", list(map(lambda x: x["height"], found_formats.values())))
