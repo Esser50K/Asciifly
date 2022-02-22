@@ -10,6 +10,8 @@ from encoder import asciify
 
 MAX_IMG_WIDTH = 600
 MAX_VIDEO_WIDTH = 300
+WATERMARK = "made with asciifly.com"
+
 
 def invert_brightness():
     invert_chars()
@@ -28,7 +30,7 @@ def asciify_image(img_data: str, width=MAX_IMG_WIDTH) -> str:
 
     frame = cv2.resize(img, (width, height))
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    return asciify(frame), width, height
+    return asciify(frame, WATERMARK), width, height
 
 def asciify_yt_video(yt_url: str, width=MAX_VIDEO_WIDTH):
     width = int(width)
@@ -60,7 +62,7 @@ def asciify_yt_video(yt_url: str, width=MAX_VIDEO_WIDTH):
             frame = cv2.resize(orig_frame, (width, height))
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-            ascii_frame = asciify(frame)
+            ascii_frame = asciify(frame, WATERMARK)
             yield ascii_frame, width, height
             
             elapsed = (time.perf_counter_ns()//1000000) - start

@@ -15,7 +15,7 @@ def get_char(val):
     return characters[min(int(val/char_range), len(characters)-1)]
 
 @cython.boundscheck(False)
-cpdef asciify(unsigned char [:, :] frame):
+cpdef asciify(unsigned char [:, :] frame, watermark=''):
     cdef int x, y, idx
 
     height = frame.shape[0]
@@ -29,6 +29,11 @@ cpdef asciify(unsigned char [:, :] frame):
             idx = (y * (width+1)) + x
             arr[idx] = ord(get_char(frame[y, x]))
         arr[idx+1] = b'\n'
+    
+    # write watermark
+    watermark_start_idx = arr_size - len(watermark) - 2
+    for x in range(len(watermark)):
+        arr[watermark_start_idx+x] = ord(watermark[x])
 
     arr[arr_size-1] = b'\x00'
     str_result = arr.decode('ascii')
