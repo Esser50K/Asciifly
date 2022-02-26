@@ -9,7 +9,9 @@ import pyximport
 pyximport.install()
 from encoder import asciify
 
+MIN_IMG_WIDTH = 300
 MAX_IMG_WIDTH = 600
+MIN_VIDEO_WIDTH = 180
 MAX_VIDEO_WIDTH = 300
 WATERMARK = "made with asciifly.com"
 
@@ -19,7 +21,9 @@ def invert_brightness():
 
 def asciify_image(img_data: str, width=MAX_IMG_WIDTH) -> str:
     width = int(width)
-    if width > MAX_IMG_WIDTH:
+    if width < MIN_IMG_WIDTH:
+        width = MIN_IMG_WIDTH
+    elif width > MAX_IMG_WIDTH:
         width = MAX_IMG_WIDTH
 
     nparr = np.frombuffer(img_data, np.uint8)
@@ -59,6 +63,8 @@ made with asciifly.com
 
 def asciify_yt_video(yt_url: str, width=MAX_VIDEO_WIDTH):
     width = int(width)
+    if width < MIN_VIDEO_WIDTH:
+        width = MIN_VIDEO_WIDTH
     if width > MAX_VIDEO_WIDTH:
         width = MAX_VIDEO_WIDTH
         
