@@ -6,3 +6,4 @@ cython
 youtube_dl
 Werkzeug~=1.0.1
 html2image
+markupsafe==2.0.1

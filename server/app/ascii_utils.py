@@ -34,7 +34,7 @@ def asciify_image(img_data: str, width=MAX_IMG_WIDTH) -> str:
     return asciify(frame, WATERMARK), width, height
 
 def ascii_to_img(ascii_img: str, scale_factor=6) -> str:
-    hti = Html2Image()
+    hti = Html2Image(custom_flags=["--no-sandbox", "--hide-scrollbars"])
     img_name = str(hash(ascii_img)) + ".png"
     ascii_lines = ascii_img.split("\n")
     img_width = len(ascii_lines[0])
