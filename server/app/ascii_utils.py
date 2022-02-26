@@ -3,6 +3,7 @@ import cv2
 import time
 import numpy as np
 import youtube_dl
+from html2image import Html2Image
 
 import pyximport
 pyximport.install()
@@ -31,6 +32,30 @@ def asciify_image(img_data: str, width=MAX_IMG_WIDTH) -> str:
     frame = cv2.resize(img, (width, height))
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     return asciify(frame, WATERMARK), width, height
+
+def ascii_to_img(ascii_img: str, scale_factor=6) -> str:
+    hti = Html2Image()
+    img_name = str(hash(ascii_img)) + ".png"
+    ascii_lines = ascii_img.split("\n")
+    img_width = len(ascii_lines[0])
+    img_height = len(ascii_lines)
+    hti.screenshot(html_str=_gen_html(ascii_img, scale_factor), size=(img_width*scale_factor, img_height*scale_factor), save_as=img_name)
+    return img_name
+
+def _gen_html(ascii_img: str, scale_factor: int) -> str:
+    return \
+"""
+<body style="margin: 0px; width: min-content;">
+<pre style="background-color: #282c34; color:#fff; line-height: %dpx; font-size: %f;">
+%s
+</pre>
+<div style="position:fixed; bottom: 0; right: 0;background-color: #fff; font-size:1vw; padding: 5px; border: solid #282c34 5px">
+<pre style="margin:0px">
+made with asciifly.com
+</pre>
+</div>
+</body>
+""" % (scale_factor, scale_factor*(5/3), ascii_img)
 
 def asciify_yt_video(yt_url: str, width=MAX_VIDEO_WIDTH):
     width = int(width)

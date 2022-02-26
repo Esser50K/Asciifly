@@ -1,13 +1,14 @@
+import os
 import sys
 import json
 import base64
 import logging
-from flask import Flask, request
+from flask import Flask, request, send_file
 from flask_cors import CORS
 from flask_sockets import Sockets
 from geventwebsocket.websocket import WebSocket
 from werkzeug.exceptions import BadRequest
-from ascii_utils import asciify_image, asciify_yt_video, MAX_IMG_WIDTH
+from ascii_utils import asciify_image, asciify_yt_video, ascii_to_img, MAX_IMG_WIDTH
 
 app = Flask(__name__)
 CORS(app)
@@ -37,11 +38,27 @@ def upload():
     ascii_img, width, height = asciify_image(img_data, req["width"])
     return json.dumps({'img': ascii_img, 'width': width, 'height': height})
 
+@app.route("/img/download", methods=[POST])
+def download():
+    req = None
+    try:
+        req = json.loads(request.data)
+    except Exception as e:
+        return BadRequest("image was not encoded correctly")
+        
+    if "ascii_img" not in req.keys():
+        return BadRequest("missing ascii_img param")
+
+    ascii_img = req["ascii_img"]    
+    img_name = ascii_to_img(ascii_img)
+    result =  send_file(img_name)
+    os.remove(img_name)
+    return result
+
 @sockets.route('/vid')
 def get_updates(ws: WebSocket):
     try:
         video_info = ws.read_message()
-        print(video_info)
         try:
             video_info = json.loads(video_info)
         except Exception as e:

@@ -16,7 +16,9 @@ function App() {
   const [fileIsHovering, setFileIsHovering] = useState(false)
   const [wrongFileType, setWrongFileType] = useState(false)
   const [loadingIdx, setLoadingIdx] = useState(0)
+  const [downloadingIdx, setDownloadingIdx] = useState(0)
   const [playerState, setPlayerState] = useState(PlayerState.Empty)
+  const [downloading, setDownloading] = useState(false)
   const [lineLength, setLineLength] = useState(0)
   const [nLines, setNLines] = useState(0)
   const [lineHeight, setLineHeight] = useState(0)
@@ -29,6 +31,11 @@ function App() {
     `    __                      __ _                  \n   / /   ____   ____ _ ____/ /(_)____   ____ _    \n  / /   / __ \\ / __ \`// __  // // __ \\ / __ \`/    \n / /___/ /_/ // /_/ // /_/ // // / / // /_/ /  _  \n/_____/\\____/ \\__,_/ \\__,_//_//_/ /_/ \\__, /  (_) \n                                     /____/       `,
     `    __                      __ _                       \n   / /   ____   ____ _ ____/ /(_)____   ____ _         \n  / /   / __ \\ / __ \`// __  // // __ \\ / __ \`/         \n / /___/ /_/ // /_/ // /_/ // // / / // /_/ /  _    _  \n/_____/\\____/ \\__,_/ \\__,_//_//_/ /_/ \\__, /  (_)  (_) \n                                     /____/            `,
     `    __                      __ _                            \n   / /   ____   ____ _ ____/ /(_)____   ____ _              \n  / /   / __ \\ / __ \`// __  // // __ \\ / __ \`/              \n / /___/ /_/ // /_/ // /_/ // // / / // /_/ /  _    _    _  \n/_____/\\____/ \\__,_/ \\__,_//_//_/ /_/ \\__, /  (_)  (_)  (_) \n                                     /____/                 \n`
+  ]
+  const downloadingFile = [
+    `downloading.`,
+    `downloading..`,
+    `downloading...`
   ]
 
   const isHttps = (): boolean => {
@@ -67,7 +74,6 @@ function App() {
   }
 
   const loadVideo = (ytUrl: string, mute: boolean) => {
-    console.info("LOADING VID")
     const videoId = ytUrl.split("v=")[1]
 
     // @ts-ignore the Player object is created uniquely based on the id in props
@@ -91,6 +97,42 @@ function App() {
         onError: (e: any) => console.error("yt player error:", e)
       },
     });
+  }
+
+  const hashCode = (input: string) => {
+    var hash = 0, i, chr;
+    if (input.length === 0) return hash;
+    for (i = 0; i < input.length; i++) {
+      chr = input.charCodeAt(i);
+      hash = ((hash << 5) - hash) + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+  }
+
+  const downloadImage = async () => {
+    setDownloading(true);
+    const resp = await fetch(getUrl() + "/img/download", { method: "POST", body: JSON.stringify({ ascii_img: playerContent }) })
+    if (resp.status !== 200) {
+      console.error("error downloading image:", await resp.text())
+      alert("error downloading image")
+      setPlayerState(PlayerState.Empty)
+      setDownloading(false);
+    }
+
+    downloadFile(await resp.blob())
+    setDownloading(false);
+  }
+
+  const downloadFile = (blob: Blob) => {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = (Math.abs(hashCode(playerContent))).toString() + '.png';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 
   let dragInCount = 0
@@ -209,12 +251,12 @@ function App() {
       ws.send(JSON.stringify({ url: ytUrl, width: window.innerWidth / 6 }))
     }
     ws.onerror = () => {
-      alert("error processing image")
+      alert("error processing video")
       setPlayerState(PlayerState.Empty)
     }
     ws.onclose = () => {
       if (!firstFrame) {
-        alert("error processing image")
+        alert("error processing video")
       }
       setPlayerState(PlayerState.Empty)
     }
@@ -235,7 +277,6 @@ function App() {
         scrolledDown = true
         // @ts-ignore
         window.YTPlayer.playVideo()
-        console.info("PLAYED VIDEO")
       }
     }
   }
@@ -264,7 +305,6 @@ function App() {
         window.addEventListener('click', () => {
           // @ts-ignore
           if (window.YTPlayer && window.YTPlayer.isMuted()) {
-            console.info("UNMUTED")
             // @ts-ignore
             window.YTPlayer.unMute();
             setShowToast(false);
@@ -295,6 +335,18 @@ function App() {
     setPlayerContent(loading[loadingIdx])
     await new Promise((resolve => setTimeout(resolve, 200)))
     setLoadingIdx((loadingIdx + 1) % loading.length)
+  }
+
+  useEffect(() => {
+    if (downloading) {
+      setDownloadAnim()
+      return
+    }
+  }, [downloading, downloadingIdx])
+
+  const setDownloadAnim = async () => {
+    await new Promise((resolve => setTimeout(resolve, 300)))
+    setDownloadingIdx((downloadingIdx + 1) % downloadingFile.length)
   }
 
   const adjustPlayerSize = () => {
@@ -372,7 +424,6 @@ function App() {
             </div>
 
             <div className="img-input-container">
-
               <div ref={imgInput}
                 className={"img-input-box " +
                   (fileIsHovering ?
@@ -409,7 +460,26 @@ function App() {
           </pre>
         </div>
         <div id='youtube-player'></div>
+
+        {
+          playerContent !== "" && playerState !== PlayerState.Loading ?
+            <div
+              className="download-btn"
+              style={!downloading ? { textAlign: "center" } : {}}
+
+              onClick={(() => downloadImage())}>
+              <div className="download-btn-content">
+                {
+                  downloading ?
+                    downloadingFile[downloadingIdx]
+                    : "download"
+                }
+              </div>
+            </div> :
+            null
+        }
       </div>
+
     </div>
   );
 }
