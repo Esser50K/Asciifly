@@ -9,9 +9,9 @@ import pyximport
 pyximport.install()
 from encoder import asciify
 
-MIN_IMG_WIDTH = 300
+MIN_IMG_WIDTH = 150
 MAX_IMG_WIDTH = 600
-MIN_VIDEO_WIDTH = 180
+MIN_VIDEO_WIDTH = 120
 MAX_VIDEO_WIDTH = 300
 WATERMARK = "made with asciifly.com"
 
