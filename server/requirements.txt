@@ -7,3 +7,7 @@ youtube_dl
 Werkzeug~=1.0.1
 html2image
 markupsafe==2.0.1
+prometheus-flask-exporter
+opentelemetry-distro==0.26b1
+opentelemetry-instrumentation==0.26b1
+opentelemetry-exporter-otlp==1.7.1

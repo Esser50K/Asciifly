@@ -15,5 +15,10 @@ RUN pip3 install -r /requirements.txt
 COPY app /app
 WORKDIR /app
 RUN cython -3 encoder.pyx
+RUN opentelemetry-bootstrap --action=install
 
-ENTRYPOINT [ "python3", "main.py" ]
+ENV OTEL_RESOURCE_ATTRIBUTES=service.name=asciifly
+ENV OTEL_METRICS_EXPORTER=none
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="http://144.126.140.147:4317"
+
+ENTRYPOINT ["opentelemetry-instrument", "python3", "main.py"]
