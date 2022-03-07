@@ -54,7 +54,10 @@ def ascii_to_img(ascii_img: str, scale_factor=6) -> str:
         # one could manipulate the input to execute a shell command
         tmp_html_name = img_name+".html"
         with open(tmp_html_name, "w") as tmp_html:
-            tmp_html.write(_gen_html(ascii_img, scale_factor))
+            html_page = _gen_html(ascii_img, scale_factor)
+            if "script" in html_page:
+                raise Exception("script tag attempt detected:\n", html_page)
+            tmp_html.write(html_page)
         hti.screenshot(html_file=tmp_html_name, size=(img_width*scale_factor, img_height*scale_factor), save_as=img_name)
         os.remove(tmp_html_name)
         
