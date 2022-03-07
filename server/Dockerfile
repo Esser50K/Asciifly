@@ -11,11 +11,11 @@ RUN sed -i "s/google-chrome-stable/google-chrome-stable --no-sandbox/g" /usr/sha
 
 COPY requirements.txt /
 RUN pip3 install -r /requirements.txt
+RUN opentelemetry-bootstrap --action=install
 
 COPY app /app
 WORKDIR /app
 RUN cython -3 encoder.pyx
-RUN opentelemetry-bootstrap --action=install
 
 ENV OTEL_RESOURCE_ATTRIBUTES=service.name=asciifly
 ENV OTEL_METRICS_EXPORTER=none
