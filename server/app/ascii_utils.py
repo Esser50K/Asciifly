@@ -1,4 +1,5 @@
 #cython: language_level=3
+import os
 import cv2
 import time
 import numpy as np
@@ -48,7 +49,15 @@ def ascii_to_img(ascii_img: str, scale_factor=6) -> str:
         ascii_lines = ascii_img.split("\n")
         img_width = len(ascii_lines[0])
         img_height = len(ascii_lines)
-        hti.screenshot(html_str=_gen_html(ascii_img, scale_factor), size=(img_width*scale_factor, img_height*scale_factor), save_as=img_name)
+        
+        # writing html to file avoids some hacks where
+        # one could manipulate the input to execute a shell command
+        tmp_html_name = img_name+".html"
+        with open(tmp_html_name, "w") as tmp_html:
+            tmp_html.write(_gen_html(ascii_img, scale_factor))
+        hti.screenshot(html_file=tmp_html_name, size=(img_width*scale_factor, img_height*scale_factor), save_as=img_name)
+        os.remove(tmp_html_name)
+        
         return img_name
 
 def _gen_html(ascii_img: str, scale_factor: int) -> str:
