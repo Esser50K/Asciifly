@@ -42,13 +42,14 @@ def asciify_image(img_data: str, width=MAX_IMG_WIDTH) -> str:
         return asciify(frame, WATERMARK), width, height
 
 def ascii_to_img(ascii_img: str, scale_factor=6) -> str:
-    hti = Html2Image(custom_flags=["--no-sandbox", "--hide-scrollbars"])
-    img_name = str(hash(ascii_img)) + ".png"
-    ascii_lines = ascii_img.split("\n")
-    img_width = len(ascii_lines[0])
-    img_height = len(ascii_lines)
-    hti.screenshot(html_str=_gen_html(ascii_img, scale_factor), size=(img_width*scale_factor, img_height*scale_factor), save_as=img_name)
-    return img_name
+    with tracer.start_as_current_span("ascii-to-img"):
+        hti = Html2Image(custom_flags=["--no-sandbox", "--hide-scrollbars"])
+        img_name = str(hash(ascii_img)) + ".png"
+        ascii_lines = ascii_img.split("\n")
+        img_width = len(ascii_lines[0])
+        img_height = len(ascii_lines)
+        hti.screenshot(html_str=_gen_html(ascii_img, scale_factor), size=(img_width*scale_factor, img_height*scale_factor), save_as=img_name)
+        return img_name
 
 def _gen_html(ascii_img: str, scale_factor: int) -> str:
     return \
@@ -72,17 +73,19 @@ def asciify_yt_video(yt_url: str, width=MAX_VIDEO_WIDTH):
     if width > MAX_VIDEO_WIDTH:
         width = MAX_VIDEO_WIDTH
         
-    options = {}
-    Y = youtube_dl.YoutubeDL(options)
-    info_dict = Y.extract_info(yt_url, download=False)
-    best_video_format = find_best_video_quality_url(info_dict)    
+    with tracer.start_as_current_span("find-best-video"):
+        options = {}
+        Y = youtube_dl.YoutubeDL(options)
+        info_dict = Y.extract_info(yt_url, download=False)
+        best_video_format = find_best_video_quality_url(info_dict)    
     
     try:
-        video = cv2.VideoCapture(best_video_format["url"])
-        ok, frame = video.read()
-        if not ok:
-            print("could not extract frame from video")
-            
+        with tracer.start_as_current_span("read-first-frame"):
+            video = cv2.VideoCapture(best_video_format["url"])
+            ok, frame = video.read()
+            if not ok:
+                print("could not extract frame from video")
+                
         ratio = width/frame.shape[1]
         height = int(frame.shape[0]*ratio)
         
