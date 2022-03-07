@@ -4,6 +4,7 @@ import time
 import numpy as np
 import youtube_dl
 from html2image import Html2Image
+from opentelemetry import trace
 
 import pyximport
 pyximport.install()
@@ -14,6 +15,7 @@ MAX_IMG_WIDTH = 600
 MIN_VIDEO_WIDTH = 120
 MAX_VIDEO_WIDTH = 300
 WATERMARK = "made with asciifly.com"
+tracer = trace.get_tracer(__name__)
 
 
 def invert_brightness():
@@ -25,17 +27,19 @@ def asciify_image(img_data: str, width=MAX_IMG_WIDTH) -> str:
         width = MIN_IMG_WIDTH
     elif width > MAX_IMG_WIDTH:
         width = MAX_IMG_WIDTH
+        
+    with tracer.start_as_current_span("opencv-conversions"):
+        nparr = np.frombuffer(img_data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        
+        ratio = width/img.shape[1]
+        height = int(img.shape[0]*ratio)
 
-    nparr = np.frombuffer(img_data, np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    
-    
-    ratio = width/img.shape[1]
-    height = int(img.shape[0]*ratio)
-
-    frame = cv2.resize(img, (width, height))
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    return asciify(frame, WATERMARK), width, height
+        frame = cv2.resize(img, (width, height))
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        
+    with tracer.start_as_current_span("asciify"):
+        return asciify(frame, WATERMARK), width, height
 
 def ascii_to_img(ascii_img: str, scale_factor=6) -> str:
     hti = Html2Image(custom_flags=["--no-sandbox", "--hide-scrollbars"])

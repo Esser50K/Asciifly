@@ -3,6 +3,7 @@ import sys
 import json
 import base64
 import logging
+from opentelemetry import trace
 from flask import Flask, request, send_file
 from flask_cors import CORS
 from flask_sockets import Sockets
@@ -13,6 +14,7 @@ from ascii_utils import asciify_image, asciify_yt_video, ascii_to_img, MAX_IMG_W
 app = Flask(__name__)
 CORS(app)
 sockets = Sockets(app)
+tracer = trace.get_tracer(__name__)
 
 # Request Types
 GET = "GET"
@@ -21,18 +23,19 @@ DELETE = "DELETE"
 
 @app.route("/img", methods=[POST])
 def upload():
-    req = None
-    try:
-        req = json.loads(request.data)
-    except Exception as e:
-        return BadRequest("image was not encoded correctly")
-    
-    
-    img_data = None
-    try:
-        img_data = base64.b64decode(req["img"])
-    except Exception as e:
-        return BadRequest("image was not encoded correctly")
+    with tracer.start_as_current_span("parse-img"):
+        req = None
+        try:
+            req = json.loads(request.data)
+        except Exception as e:
+            return BadRequest("image was not encoded correctly")
+        
+        
+        img_data = None
+        try:
+            img_data = base64.b64decode(req["img"])
+        except Exception as e:
+            return BadRequest("image was not encoded correctly")
 
     width = req["width"] if "width" in req.keys() else MAX_IMG_WIDTH
     ascii_img, width, height = asciify_image(img_data, req["width"])
@@ -40,14 +43,15 @@ def upload():
 
 @app.route("/img/download", methods=[POST])
 def download():
-    req = None
-    try:
-        req = json.loads(request.data)
-    except Exception as e:
-        return BadRequest("image was not encoded correctly")
-        
-    if "ascii_img" not in req.keys():
-        return BadRequest("missing ascii_img param")
+    with tracer.start_as_current_span("parse-img-download"):
+        req = None
+        try:
+            req = json.loads(request.data)
+        except Exception as e:
+            return BadRequest("image was not encoded correctly")
+            
+        if "ascii_img" not in req.keys():
+            return BadRequest("missing ascii_img param")
 
     ascii_img = req["ascii_img"]    
     img_name = ascii_to_img(ascii_img)
@@ -64,12 +68,13 @@ def get_updates(ws: WebSocket):
         except Exception as e:
             return BadRequest("video info was not encoded correctly")
     
-        for frame, width, height in asciify_yt_video(video_info["url"], video_info["width"]):
-            try:
-                ws.send(json.dumps({'frame': frame, 'width': width, 'height': height}))
-            except Exception as e:
-                print("error sending frame:", e)
-                return
+        with tracer.start_as_current_span("asciify-video"):
+            for frame, width, height in asciify_yt_video(video_info["url"], video_info["width"]):
+                try:
+                    ws.send(json.dumps({'frame': frame, 'width': width, 'height': height}))
+                except Exception as e:
+                    print("error sending frame:", e)
+                    return
     except Exception as e:
         logging.error("failed to decode message:", e)
     finally:
