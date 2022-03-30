@@ -1,0 +1,22 @@
+.player-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 50px;
+}
+
+.ascii-player {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.loading-screen {
+  font-size: 1.5vw;
+  position: absolute;
+  left: 25%;
+  top: 50%;
+}

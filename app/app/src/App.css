@@ -35,20 +35,6 @@ input:focus {
   margin-bottom: 150px;
 }
 
-.yt-url-input-label {
-  font-size: 12px;
-  font-family: 'Press Start 2P', cursive;
-}
-
-.yt-url-input-container {
-  width: 65%;
-}
-
-.yt-url-input-input {
-  margin-top: 5px;
-  width: 100%;
-}
-
 .input-divider {
   margin-top: 25px;
   margin-bottom: 25px;
@@ -56,91 +42,6 @@ input:focus {
   font-size: 20px;
 }
 
-.img-input-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.img-input-box {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  width: 70%;
-  min-height: 100px;
-  outline: 2px white dashed;
-}
-
-.img-input-with-file {
-  background-color: white;
-  color: black;
-}
-
-.img-input-with-wrong-file {
-  background-color: darkred;
-  color: yellow;
-}
-
-.img-input-text {
-  text-align: center;
-  margin-left: 5%;
-  margin-right: 5%;
-  font-size: 10px;
-  line-height: 15px;
-}
-
-.player-container {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 50px;
-}
-
-
-.ascii-player {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.download-btn {
-  margin-top: 20px;
-  padding: 8px;
-  border: solid #fff 2px;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 30vw;
-}
-
-.download-btn:active {
-  margin-top: 20px;
-  padding: 8px;
-  border: solid #fff 2px;
-  background-color: #fff;
-  color: #282c34;
-  border-radius: 4px;
-  cursor: pointer;
-  position: relative;
-}
-
-.download-btn-content {
-  margin-left: 1vw;
-  font-size: 2vw;
-}
-
-.loading-screen {
-  font-size: 1.5vw;
-  position: absolute;
-  left: 25%;
-  top: 50%;
-}
-
-.audio-player {
-  width: 0%;
+.download-btn-wrap {
+  padding-bottom: 20px;
 }

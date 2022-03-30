@@ -1,0 +1,35 @@
+.img-input-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.img-input-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 70%;
+  min-height: 100px;
+  outline: 2px white dashed;
+}
+
+.img-input-with-file {
+  background-color: white;
+  color: black;
+}
+
+.img-input-with-wrong-file {
+  background-color: darkred;
+  color: yellow;
+}
+
+.img-input-text {
+  text-align: center;
+  margin-left: 5%;
+  margin-right: 5%;
+  font-size: 10px;
+  line-height: 15px;
+}

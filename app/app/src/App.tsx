@@ -1,46 +1,20 @@
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import './App.css';
 import Toast from './components/Toast';
+import AsciiPlayer from './components/AsciiPlayer';
+import YTPlayer from './components/YTPlayer';
+import TextInput from './components/TextInput';
+import ImageInput from './components/ImageInput';
+import DownloadButton from './components/DownloadButton';
 
-enum PlayerState {
-  Empty,
-  Loading,
-  Loaded,
-  Playing
-}
 
 function App() {
-  const imgInput = useRef(null)
   const [ytUrl, setYtUrl] = useState("")
   const [playerContent, setPlayerContent] = useState("")
-  const [fileIsHovering, setFileIsHovering] = useState(false)
-  const [wrongFileType, setWrongFileType] = useState(false)
-  const [loadingIdx, setLoadingIdx] = useState(0)
-  const [downloadingIdx, setDownloadingIdx] = useState(0)
-  const [playerState, setPlayerState] = useState(PlayerState.Empty)
+  const [showPlayer, setShowPlayer] = useState(false)
+  const [image, setImage] = useState()
   const [downloading, setDownloading] = useState(false)
-  const [lineLength, setLineLength] = useState(0)
-  const [nLines, setNLines] = useState(0)
-  const [lineHeight, setLineHeight] = useState(0)
-  const [fontSize, setFontSize] = useState(0)
-  const [windowSize, setWindowSize] = useState([0, 0])
   const [showToast, setShowToast] = useState(false)
-
-  const supportedImageTypes = ["image/jpeg", "image/jpg", "image/png"]
-  const loading = [
-    `    __                      __ _                  \n   / /   ____   ____ _ ____/ /(_)____   ____ _    \n  / /   / __ \\ / __ \`// __  // // __ \\ / __ \`/    \n / /___/ /_/ // /_/ // /_/ // // / / // /_/ /  _  \n/_____/\\____/ \\__,_/ \\__,_//_//_/ /_/ \\__, /  (_) \n                                     /____/       `,
-    `    __                      __ _                       \n   / /   ____   ____ _ ____/ /(_)____   ____ _         \n  / /   / __ \\ / __ \`// __  // // __ \\ / __ \`/         \n / /___/ /_/ // /_/ // /_/ // // / / // /_/ /  _    _  \n/_____/\\____/ \\__,_/ \\__,_//_//_/ /_/ \\__, /  (_)  (_) \n                                     /____/            `,
-    `    __                      __ _                            \n   / /   ____   ____ _ ____/ /(_)____   ____ _              \n  / /   / __ \\ / __ \`// __  // // __ \\ / __ \`/              \n / /___/ /_/ // /_/ // /_/ // // / / // /_/ /  _    _    _  \n/_____/\\____/ \\__,_/ \\__,_//_//_/ /_/ \\__, /  (_)  (_)  (_) \n                                     /____/                 \n`
-  ]
-  const downloadingFile = [
-    `downloading.`,
-    `downloading..`,
-    `downloading...`
-  ]
-
-  const isHttps = (): boolean => {
-    return window.location.protocol.startsWith("https")
-  }
 
   const isMobile = (): boolean => {
     // device detection
@@ -60,45 +34,6 @@ function App() {
     return window.location.protocol + "//" + window.location.host
   }
 
-  const loadYT = (ytUrl: string, mute: boolean) => {
-    /* @ts-ignore */
-    if (!window.YT) { // If not, load the script asynchronously
-      // @ts-ignore onYouTubeIframeAPIReady will load the video after the script is loaded
-      window.onYouTubeIframeAPIReady = () => loadVideo(ytUrl, mute);
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
-    }
-  }
-
-  const loadVideo = (ytUrl: string, mute: boolean) => {
-    const videoId = ytUrl.split("v=")[1]
-
-    // @ts-ignore the Player object is created uniquely based on the id in props
-    const player = new window.YT.Player('youtube-player', {
-      videoId: videoId,
-      width: '0',
-      height: '0',
-      muted: true,
-      events: {
-        onReady: (e: any) => {
-          if (mute) {
-            e.target.mute()
-          }
-
-          //e.target.seekTo(0)
-          //e.target.pauseVideo()
-          // @ts-ignore
-          window.YTPlayer = e.target;
-          startPlayingFromURL(ytUrl)
-        },
-        onError: (e: any) => console.error("yt player error:", e)
-      },
-    });
-  }
-
   const hashCode = (input: string) => {
     var hash = 0, i, chr;
     if (input.length === 0) return hash;
@@ -116,7 +51,6 @@ function App() {
     if (resp.status !== 200) {
       console.error("error downloading image:", await resp.text())
       alert("error downloading image")
-      setPlayerState(PlayerState.Empty)
       setDownloading(false);
     }
 
@@ -135,100 +69,35 @@ function App() {
     window.URL.revokeObjectURL(url);
   }
 
-  let dragInCount = 0
-  const handleDrag = (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-  }
-  const handleDragIn = (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    dragInCount++
-    if (e.dataTransfer?.items && e.dataTransfer.items.length > 0) {
-      setWrongFileType(false)
-      setFileIsHovering(true)
-      if (!supportedImageTypes.includes(e.dataTransfer.items[0].type)) {
-        setWrongFileType(true)
-      }
-    }
-  }
-  const handleDragOut = (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    dragInCount--
-    if (dragInCount > 0)
+  const handleSubmitImage = async (e: File) => {
+    setShowPlayer(true)
+
+    const arrBuffer = await e.arrayBuffer()
+    if (arrBuffer === undefined) {
       return
-
-    setFileIsHovering(false);
-    setWrongFileType(false)
-  }
-  const handleDrop = async (e: DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    setFileIsHovering(false)
-    setWrongFileType(false)
-    if (e.dataTransfer?.items && e.dataTransfer.items.length > 0) {
-      if (!supportedImageTypes.includes(e.dataTransfer.items[0].type)) {
-        setPlayerState(PlayerState.Empty)
-        return
-      }
-
-      setPlayerState(PlayerState.Loading)
-
-      const arrBuffer = await e.dataTransfer?.items[0].getAsFile()?.arrayBuffer()
-      if (arrBuffer === undefined)
-        return
-
-      const base64String = window.btoa(new Uint8Array(arrBuffer).reduce(function (data, byte) {
-        return data + String.fromCharCode(byte);
-      }, ''));
-      const resp = await fetch(getUrl() + "/img", { method: "POST", body: JSON.stringify({ img: base64String, width: window.innerWidth / 4 }) })
-      if (resp.status !== 200) {
-        console.error("error uploading image:", await resp.text())
-        alert("error processing image")
-        setPlayerState(PlayerState.Empty)
-      }
-
-      const decoded = await resp.json()
-      setPlayerState(PlayerState.Playing)
-      setPlayerContent(decoded.img)
-      setLineLength(decoded.width)
-      setNLines(decoded.height)
-      scrollDown()
-    }
-  }
-
-  const scrollDown = () => {
-    const scrollingElement = (document.scrollingElement || document.body);
-    scrollingElement.scrollTop = scrollingElement.scrollHeight;
-  }
-
-  const handleSelectImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files ? e.target.files[0] : null;
-    if (f === null) {
-      return;
     }
 
-    setPlayerState(PlayerState.Loading);
-    const base64String = window.btoa(new Uint8Array(await f.arrayBuffer()).reduce(function (data, byte) {
+    const base64String = window.btoa(new Uint8Array(arrBuffer).reduce(function (data, byte) {
       return data + String.fromCharCode(byte);
     }, ''));
     const resp = await fetch(getUrl() + "/img", { method: "POST", body: JSON.stringify({ img: base64String, width: window.innerWidth / 4 }) })
     if (resp.status !== 200) {
       console.error("error uploading image:", await resp.text())
       alert("error processing image")
-      setPlayerState(PlayerState.Empty)
+      setShowPlayer(false)
     }
 
     const decoded = await resp.json()
-    setPlayerContent("")
-    setPlayerState(PlayerState.Playing)
-
+    console.info(decoded)
+    setImage(decoded)
     setPlayerContent(decoded.img)
-    setLineLength(decoded.width)
-    setNLines(decoded.height)
+    setShowPlayer(true)
     scrollDown()
+  }
+
+  const scrollDown = () => {
+    const scrollingElement = (document.scrollingElement || document.body);
+    scrollingElement.scrollTop = scrollingElement.scrollHeight;
   }
 
   const onYTUrlChange = (url: string) => {
@@ -238,62 +107,12 @@ function App() {
   const onYTUrlSubmit = (e: FormEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setPlayerState(PlayerState.Loading)
-    loadYT(ytUrl, false)
-  }
-
-  const startPlayingFromURL = (ytUrl: string) => {
-    const ws = new WebSocket(getUrl().replace(window.location.protocol + "//", (isHttps() ? "wss://" : "ws://")) + "/vid")
-    //const ws = new WebSocket("wss://www.asciifly.com/vid")
-    var firstFrame = false
-    var scrolledDown = false
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ url: ytUrl, width: window.innerWidth / 6 }))
-    }
-    ws.onerror = () => {
-      alert("error processing video")
-      setPlayerState(PlayerState.Empty)
-    }
-    ws.onclose = () => {
-      if (!firstFrame) {
-        alert("error processing video")
-      }
-      setPlayerState(PlayerState.Empty)
-    }
-    ws.onmessage = async (msg: MessageEvent) => {
-      const decoded = JSON.parse(msg.data);
-      if (!firstFrame) {
-        setPlayerState(PlayerState.Playing)
-        firstFrame = true
-        setLineLength(decoded.width)
-        setNLines(decoded.height)
-        setPlayerContent(decoded.frame)
-        return
-      }
-
-      setPlayerContent(decoded.frame)
-      if (firstFrame && !scrolledDown) {
-        scrollDown()
-        scrolledDown = true
-        // @ts-ignore
-        window.YTPlayer.playVideo()
-      }
-    }
+    setYtUrl(ytUrl)
+    setShowPlayer(true)
+    setShowToast(false)
   }
 
   useEffect(() => {
-    if (imgInput.current === null) {
-      return
-    }
-
-    const div = imgInput.current! as HTMLDivElement
-    div.addEventListener('dragenter', handleDragIn)
-    div.addEventListener('dragleave', handleDragOut)
-    div.addEventListener('dragover', handleDrag)
-    div.addEventListener('drop', handleDrop)
-
-    const setSize = () => { setWindowSize([window.innerWidth, window.innerHeight]) }
-    window.addEventListener('resize', setSize)
     if (window.location.pathname === "/watch" && window.location.search !== "") {
       setShowToast(true);
       new URLSearchParams(window.location.search).forEach((v, k) => {
@@ -303,93 +122,14 @@ function App() {
 
         scrollDown()
         window.addEventListener('click', () => {
-          // @ts-ignore
-          if (window.YTPlayer && window.YTPlayer.isMuted()) {
-            // @ts-ignore
-            window.YTPlayer.unMute();
-            setShowToast(false);
-          }
+          setShowToast(false);
         })
-        setPlayerState(PlayerState.Loading)
-        loadYT("https://www.youtube.com/watch?v=" + v, true);
+        setShowPlayer(true)
+        setYtUrl("https://www.youtube.com/watch?v=" + v)
+        setShowToast(true)
       })
     }
-
-    return () => {
-      div.removeEventListener('dragenter', handleDragIn)
-      div.removeEventListener('dragleave', handleDragOut)
-      div.removeEventListener('dragover', handleDrag)
-      div.removeEventListener('drop', handleDrop)
-      window.removeEventListener('resize', setSize)
-    }
   }, [])
-
-  useEffect(() => {
-    if (playerState === PlayerState.Loading) {
-      setLoadingAnim()
-      return
-    }
-  }, [playerState, loadingIdx])
-
-  const setLoadingAnim = async () => {
-    setPlayerContent(loading[loadingIdx])
-    await new Promise((resolve => setTimeout(resolve, 200)))
-    setLoadingIdx((loadingIdx + 1) % loading.length)
-  }
-
-  useEffect(() => {
-    if (downloading) {
-      setDownloadAnim()
-      return
-    }
-  }, [downloading, downloadingIdx])
-
-  const setDownloadAnim = async () => {
-    await new Promise((resolve => setTimeout(resolve, 300)))
-    setDownloadingIdx((downloadingIdx + 1) % downloadingFile.length)
-  }
-
-  const adjustPlayerSize = () => {
-    if (nLines === 0 || lineLength === 0) {
-      return
-    }
-
-    let newLineHeight = 0
-    let newFontSize = 0
-
-    // this is the character ratio of a base monospace font
-    const characterRatio = 5 / 3
-    const windowPortion = 0.9
-    const ratio = lineLength / nLines
-    const heightLimited = (lineLength / window.innerWidth) < (nLines / window.innerHeight)
-    const limiter = heightLimited ? window.innerHeight : window.innerWidth
-    if (limiter === window.innerHeight) {
-      newLineHeight = (limiter / nLines) * windowPortion
-      newFontSize = (((limiter * ratio) / lineLength) * characterRatio) * windowPortion
-    } else {
-      newFontSize = ((limiter / lineLength) * characterRatio) * windowPortion
-      newLineHeight = ((limiter * (1 / ratio)) / nLines) * windowPortion
-    }
-
-    if (isMobile()) {
-      const adjustedNewLineHeight = (newLineHeight | 0)
-      const adjustedNewFontSize = newFontSize * (adjustedNewLineHeight / newLineHeight)
-      newLineHeight = adjustedNewLineHeight
-      newFontSize = adjustedNewFontSize
-      if (newLineHeight < 1) {
-        newLineHeight = 1
-        newFontSize = characterRatio
-      }
-    }
-
-    setLineHeight(newLineHeight)
-    setFontSize(newFontSize)
-  }
-
-  useEffect(() => { adjustPlayerSize() }, [windowSize])
-  if (lineHeight === 0) {
-    adjustPlayerSize()
-  }
 
   // eslint-disable-next-line
   //const title = `     **                     ** ** ********  **         \r\n    ****                   \/\/ \/\/ \/**\/\/\/\/\/  \/**  **   **\r\n   **\/\/**    ******  *****  ** **\/**       \/** \/\/** ** \r\n  **  \/\/**  **\/\/\/\/  **\/\/\/**\/**\/**\/*******  \/**  \/\/***  \r\n **********\/\/***** \/**  \/\/ \/**\/**\/**\/\/\/\/   \/**   \/**   \r\n\/**\/\/\/\/\/\/** \/\/\/\/\/**\/**   **\/**\/**\/**       \/**   **    \r\n\/**     \/** ****** \/\/***** \/**\/**\/**       ***  **     \r\n\/\/      \/\/ \/\/\/\/\/\/   \/\/\/\/\/  \/\/ \/\/ \/\/       \/\/\/  \/\/      `
@@ -411,75 +151,47 @@ function App() {
       <div className='description'>
       </div>
       {showToast ? <Toast text={(isMobile() ? "tap" : "click") + " to unmute"}></Toast> : null}
-      {playerState === PlayerState.Empty ?
+      {!showPlayer ?
         <div className="input-container">
           <div className="yt-url-input-container">
-            <form className="yt-url-input-form" onSubmit={(e) => { onYTUrlSubmit(e) }}>
-              <label className="yt-url-input-label" htmlFor="yt-url-input-input">paste a Youtube URL to asciify it on the fly</label>
-              <input id="yt-url-input-input" className="yt-url-input-input" type="text" onChange={(e) => onYTUrlChange(e.target.value)}></input>
-            </form>
+            <TextInput
+              onChange={onYTUrlChange}
+              onSubmit={onYTUrlSubmit}
+            ></TextInput>
 
             <div className="input-divider">
               OR
             </div>
 
-            <div className="img-input-container">
-              <div ref={imgInput}
-                className={"img-input-box " +
-                  (fileIsHovering ?
-                    wrongFileType ? "img-input-with-wrong-file" : "img-input-with-file"
-                    : "img-input-without-file")}
-                style={{ cursor: 'pointer' }}
-                onClick={() => document.getElementById("file-input")?.click()}>
-                <input type="file"
-                  accept="image/png, image/jpeg"
-                  id="file-input"
-                  style={{ "display": "none" }}
-                  onChange={handleSelectImage}>
-                </input>
-                <div className="img-input-text">
-                  {fileIsHovering ?
-                    wrongFileType ? "Unsupported file type" : "Drop the image now"
-                    : "Click to select or drag an image on this box to asciify it"}
-                </div>
-              </div>
-            </div>
+            <ImageInput
+              onImageSubmit={handleSubmitImage}
+            ></ImageInput>
           </div>
         </div> : null}
 
-      <div className="player-container">
-        <div
-          className="ascii-player"
-          style={playerState === PlayerState.Loading ? { position: 'relative' } : {}}
-        >
-          <pre
-            className={(playerState === PlayerState.Loading ? 'loading-screen' : '')}
-            style={playerState === PlayerState.Loading ? {} : { lineHeight: lineHeight + "px", fontSize: fontSize + "px" }}
-          >
-            {playerContent}
-          </pre>
-        </div>
-        <div id='youtube-player'></div>
+      <AsciiPlayer
+        ytURL={ytUrl}
+        image={image}
+        show={showPlayer}
+        onPlayerStart={scrollDown}
+        onRepaint={setPlayerContent}
+        isMobile={isMobile()}
+      ></AsciiPlayer>
+      <YTPlayer
+        ytURL={ytUrl}
+        mute={showToast}
+      ></YTPlayer>
 
-        {
-          playerContent !== "" && playerState !== PlayerState.Loading ?
-            <div
-              className="download-btn"
-              style={!downloading ? { textAlign: "center" } : {}}
-
-              onClick={(() => downloadImage())}>
-              <div className="download-btn-content">
-                {
-                  downloading ?
-                    downloadingFile[downloadingIdx]
-                    : "download"
-                }
-              </div>
-            </div> :
-            null
-        }
-      </div>
-
+      {
+        playerContent !== "" && showPlayer ?
+          <div className='download-btn-wrap'>
+            <DownloadButton
+              downloading={downloading}
+              onClick={downloadImage}
+            ></DownloadButton>
+          </div>
+          : null
+      }
     </div>
   );
 }

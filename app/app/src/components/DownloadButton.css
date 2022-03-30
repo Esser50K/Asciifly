@@ -1,0 +1,24 @@
+.download-btn {
+    margin: auto;
+    padding: 8px;
+    border: solid #fff 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 30vw;
+  }
+  
+  .download-btn:active {
+    margin: auto;
+    padding: 8px;
+    border: solid #fff 2px;
+    background-color: #fff;
+    color: #282c34;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .download-btn-content {
+    margin-left: 1vw;
+    font-size: 2vw;
+  }
