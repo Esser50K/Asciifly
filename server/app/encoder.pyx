@@ -3,7 +3,7 @@ import cython
 from functools import lru_cache
 from libc.stdlib cimport malloc, free
 
-characters = [' ', '.', ',', '\'', '"', '-', '~', ':', ';', '=', '!', '?', '*', '$', '#', '@']
+characters = [' ', '.', ',', '\'', '"', '-', '~', ':', ';', '=', '!', '*', '?', '$', '#', '@']
 char_range = int(255 / len(characters))
 
 def invert_chars():
