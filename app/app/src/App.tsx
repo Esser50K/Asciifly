@@ -6,6 +6,7 @@ import YTPlayer from './components/YTPlayer';
 import TextInput from './components/TextInput';
 import ImageInput from './components/ImageInput';
 import DownloadButton from './components/DownloadButton';
+import DonateButton from './components/DonateButton';
 
 
 function App() {
@@ -166,6 +167,17 @@ function App() {
             <ImageInput
               onImageSubmit={handleSubmitImage}
             ></ImageInput>
+
+            <div className="input-divider">
+              OR
+            </div>
+
+            <div className='donate-btn-wrap'>
+              <DonateButton></DonateButton>
+              <div className='donate-btn-text'>
+                To support my server costs <br /> and development efforts C:
+              </div>
+            </div>
           </div>
         </div> : null}
 

@@ -42,6 +42,19 @@ input:focus {
   font-size: 20px;
 }
 
+.donate-btn-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.donate-btn-text {
+  margin: 8px;
+  font-size: 12px;
+  line-height: 14px;
+}
+
 .download-btn-wrap {
   padding-bottom: 20px;
 }
