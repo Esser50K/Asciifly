@@ -2,6 +2,8 @@
 
 Asciifly is a webapp where you can asciify images and youtube videos on the fly.
 
+Come visit at https://asciifly.com
+
 <img src="asciifly.gif" width="1000">
 
 
