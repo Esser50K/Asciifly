@@ -7,7 +7,85 @@ import TextInput from './components/TextInput';
 import ImageInput from './components/ImageInput';
 import DownloadButton from './components/DownloadButton';
 import DonateButton from './components/DonateButton';
+import {
+  alpha,
+  AppBar,
+  Badge, Button,
+  createStyles, CssBaseline,
+  Drawer,
+  IconButton, InputBase,
+  makeStyles, Theme,
+  Toolbar,
+  Typography
+} from "@material-ui/core";
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
 
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+      grow: {
+        flexGrow: 1,
+      },
+      appBar: {
+        zIndex: theme.zIndex.drawer + 1,
+      },
+      menuButton: {
+        marginRight: theme.spacing(2),
+      },
+      toolbar: {
+        justifyContent: 'space-between',
+      },
+      toolbarStart: {
+        display: 'flex',
+        alignItems: 'center',
+      },
+      title: {
+        display: 'none',
+        [theme.breakpoints.up('sm')]: {
+          display: 'block',
+        },
+      },
+      search: {
+        position: 'relative',
+        borderRadius: theme.shape.borderRadius,
+        backgroundColor: alpha(theme.palette.common.white, 0.15),
+        '&:hover': {
+          backgroundColor: alpha(theme.palette.common.white, 0.25),
+        },
+        marginRight: theme.spacing(2),
+        marginLeft: 0,
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+          marginLeft: theme.spacing(3),
+          width: 'auto',
+        },
+      },
+      inputRoot: {
+        color: 'inherit',
+      },
+      inputInput: {
+        padding: theme.spacing(1, 1, 1, 1),
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('md')]: {
+          width: '65ch',
+        },
+      },
+      toolbarEnd: {
+        width: '130px',
+      },
+      offset: theme.mixins.toolbar,
+      drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+      },
+      drawerPaper: {
+        width: drawerWidth,
+      },
+    }),
+);
 
 function App() {
   const [ytUrl, setYtUrl] = useState("")
@@ -16,6 +94,8 @@ function App() {
   const [image, setImage] = useState()
   const [downloading, setDownloading] = useState(false)
   const [showToast, setShowToast] = useState(false)
+
+  const classes = useStyles();
 
   const isMobile = (): boolean => {
     // device detection
@@ -137,8 +217,53 @@ function App() {
   //const title = `                                                                                   \n                                                                                   \n   ,---,                                                 ,---,.  ,--,              \n  \'  .\' \\                             ,--,    ,--,     ,\'  .\' |,--.\'|              \n /  ;    \'.                         ,--.\'|  ,--.\'|   ,---.\'   ||  | :              \n:  :       \\    .--.--.             |  |,   |  |,    |   |   .\':  : \'              \n:  |   /\\   \\  /  /    \'     ,---.  \`--\'_   \`--\'_    :   :  :  |  \' |        .--,  \n|  :  \' ;.   :|  :  /\`./    /     \\ ,\' ,\'|  ,\' ,\'|   :   |  |-,\'  | |      /_ ./|  \n|  |  ;/  \\   \\  :  ;_     /    / \' \'  | |  \'  | |   |   :  ;/||  | :   , \' , \' :  \n\'  :  | \\  \\ ,\'\\  \\    \`. .    \' /  |  | :  |  | :   |   |   .\'\'  : |__/___/ \\: |  \n|  |  \'  \'--\'   \`----.   \\\'   ; :__ \'  : |__\'  : |__ \'   :  \'  |  | \'.\'|.  \\  \' |  \n|  :  :        /  /\`--\'  /\'   | \'.\'||  | \'.\'|  | \'.\'||   |  |  ;  :    ; \\  ;   :  \n|  | ,\'       \'--\'.     / |   :    :;  :    ;  :    ;|   :  \\  |  ,   /   \\  \\  ;  \n\`--\'\'           \`--\'---\'   \\   \\  / |  ,   /|  ,   / |   | ,\'   ---\`-\'     :  \\  \\ \n                            \`----\'   ---\`-\'  ---\`-\'  \`----\'                 \\  \' ; \n                                                                             \`--\`  `
   //const title = ` ______                          ____    ___                \n/\\  _  \\                  __  __/\\  _\`\\ /\\_ \\               \n\\ \\ \\_\\ \\    ____    ___ /\\_\\/\\_\\ \\ \\_\\_\\//\\ \\    __  __    \n \\ \\  __ \\  /\',__\\  /\'___\\/\\ \\/\\ \\ \\  _\\/ \\ \\ \\  /\\ \\/\\ \\   \n  \\ \\ \\/\\ \\/\\__, \`\\/\\ \\__/\\ \\ \\ \\ \\ \\ \\/   \\_\\ \\_\\ \\ \\_\\ \\  \n   \\ \\_\\ \\_\\/\\____/\\ \\____\\\\ \\_\\ \\_\\ \\_\\   /\\____\\\\/\`____ \\ \n    \\/_/\\/_/\\/___/  \\/____/ \\/_/\\/_/\\/_/   \\/____/ \`/___/> \\\n                                                      /\\___/\n                                                      \\/__/ `
   const title = `_____/\\\\\\\\\\\\\\\\\\____________________________________________/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\\\\\\\__________________        \n ___/\\\\\\\\\\\\\\\\\\\\\\\\\\_________________________________________\\/\\\\\\///////////__\\////\\\\\\__________________       \n  __/\\\\\\/////////\\\\\\_____________________________/\\\\\\__/\\\\\\_\\/\\\\\\________________\\/\\\\\\_______/\\\\\\__/\\\\\\_      \n   _\\/\\\\\\_______\\/\\\\\\__/\\\\\\\\\\\\\\\\\\\\_____/\\\\\\\\\\\\\\\\_\\///__\\///__\\/\\\\\\\\\\\\\\\\\\\\\\________\\/\\\\\\______\\//\\\\\\/\\\\\\__     \n    _\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\/\\\\\\//////____/\\\\\\//////___/\\\\\\__/\\\\\\_\\/\\\\\\///////_________\\/\\\\\\_______\\//\\\\\\\\\\___    \n     _\\/\\\\\\/////////\\\\\\_\\/\\\\\\\\\\\\\\\\\\\\__/\\\\\\_________\\/\\\\\\_\\/\\\\\\_\\/\\\\\\________________\\/\\\\\\________\\//\\\\\\____   \n      _\\/\\\\\\_______\\/\\\\\\_\\////////\\\\\\_\\//\\\\\\________\\/\\\\\\_\\/\\\\\\_\\/\\\\\\________________\\/\\\\\\_____/\\\\_/\\\\\\_____  \n       _\\/\\\\\\_______\\/\\\\\\__/\\\\\\\\\\\\\\\\\\\\__\\///\\\\\\\\\\\\\\\\_\\/\\\\\\_\\/\\\\\\_\\/\\\\\\______________/\\\\\\\\\\\\\\\\\\_\\//\\\\\\\\/______ \n        _\\///________\\///__\\//////////_____\\////////__\\///__\\///__\\///______________\\/////////___\\////________`
+
   return (
     <div className="app">
+      <div className={classes.grow}>
+        <CssBaseline />
+        <AppBar className={classes.appBar} position="fixed">
+          <Toolbar className={classes.toolbar}>
+            <div className={classes.toolbarStart}>
+              <IconButton
+                  edge="start"
+                  className={classes.menuButton}
+                  color="inherit"
+                  aria-label="open drawer"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography className={classes.title} variant="h6" noWrap>
+                90's YouTube
+              </Typography>
+            </div>
+            <div className={classes.search}>
+              <InputBase
+                  placeholder="Search…"
+                  classes={{
+                    root: classes.inputRoot,
+                    input: classes.inputInput,
+                  }}
+                  inputProps={{ 'aria-label': 'search' }}
+              />
+              <Button>
+                <SearchIcon />
+              </Button>
+            </div>
+            <div className={classes.toolbarEnd} />
+          </Toolbar>
+        </AppBar>
+        <div className={classes.offset} />
+        <Drawer
+            className={classes.drawer}
+            variant="permanent"
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+        >
+          <div className={classes.offset} />
+        </Drawer>
+      </div>
       <header className="app-header">
         <div>
           <pre>
@@ -149,6 +274,7 @@ function App() {
           </p>
         </div>
       </header>
+      <Typography variant="h1">Test</Typography>
       <div className='description'>
       </div>
       {showToast ? <Toast text={(isMobile() ? "tap" : "click") + " to unmute"}></Toast> : null}
