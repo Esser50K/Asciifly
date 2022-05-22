@@ -134,7 +134,6 @@ function Home() {
 
     return (
         <>
-            <Typography variant="h1">Latest shit</Typography>
             <Grid container spacing={3}>
               <Grid item xs={3}>
                   <YoutubeVideoThumbnail />

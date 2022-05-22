@@ -13,7 +13,7 @@ import {
     Typography
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
-import SearchIcon from "@material-ui/icons/Search";
+import PlayCircleFilled from "@material-ui/icons/PlayCircleFilled";
 
 const drawerWidth = 240;
 
@@ -117,16 +117,16 @@ function Layout() {
                         </div>
                         <div className={classes.search}>
                             <InputBase
-                                placeholder="Search…"
+                                placeholder="https://www.youtube.com/watch?v=_gozzJ5Yjsc"
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.inputInput,
                                 }}
                                 inputProps={{'aria-label': 'search'}}
                             />
-                            <Button>
-                                <SearchIcon/>
-                            </Button>
+                            <IconButton color="inherit" aria-label="convert from url">
+                                <PlayCircleFilled/>
+                            </IconButton>
                         </div>
                         <div className={classes.toolbarEnd}/>
                     </Toolbar>
