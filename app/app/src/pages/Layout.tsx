@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import {
     alpha,
     AppBar,
-    Button, Container, createStyles,
+    Container, createStyles,
     CssBaseline,
     Drawer,
     IconButton,
@@ -89,6 +89,8 @@ const useStyles = makeStyles((theme: Theme) =>
         container: {
             paddingTop: theme.spacing(4),
             paddingBottom: theme.spacing(4),
+            paddingLeft: theme.spacing(2),
+            paddingRight: theme.spacing(2),
         },
     }),
 );
@@ -98,40 +100,38 @@ function Layout() {
 
     return (
         <div className={classes.root}>
-            <div className={classes.grow}>
-                <CssBaseline/>
-                <AppBar className={classes.appBar} position="fixed">
-                    <Toolbar className={classes.toolbar}>
-                        <div className={classes.toolbarStart}>
-                            <IconButton
-                                edge="start"
-                                className={classes.menuButton}
-                                color="inherit"
-                                aria-label="open drawer"
-                            >
-                                <MenuIcon/>
-                            </IconButton>
-                            <Typography className={classes.title} variant="h6" noWrap>
-                                90's YouTube
-                            </Typography>
-                        </div>
-                        <div className={classes.search}>
-                            <InputBase
-                                placeholder="https://www.youtube.com/watch?v=_gozzJ5Yjsc"
-                                classes={{
-                                    root: classes.inputRoot,
-                                    input: classes.inputInput,
-                                }}
-                                inputProps={{'aria-label': 'search'}}
-                            />
-                            <IconButton color="inherit" aria-label="convert from url">
-                                <PlayCircleFilled/>
-                            </IconButton>
-                        </div>
-                        <div className={classes.toolbarEnd}/>
-                    </Toolbar>
-                </AppBar>
-            </div>
+            <CssBaseline/>
+            <AppBar className={classes.appBar} position="fixed">
+                <Toolbar className={classes.toolbar}>
+                    <div className={classes.toolbarStart}>
+                        <IconButton
+                            edge="start"
+                            className={classes.menuButton}
+                            color="inherit"
+                            aria-label="open drawer"
+                        >
+                            <MenuIcon/>
+                        </IconButton>
+                        <Typography className={classes.title} variant="h6" noWrap>
+                            90's YouTube
+                        </Typography>
+                    </div>
+                    <div className={classes.search}>
+                        <InputBase
+                            placeholder="https://www.youtube.com/watch?v=c7rarQiUmng"
+                            classes={{
+                                root: classes.inputRoot,
+                                input: classes.inputInput,
+                            }}
+                            inputProps={{'aria-label': 'search'}}
+                        />
+                        <IconButton color="inherit" aria-label="convert from url">
+                            <PlayCircleFilled/>
+                        </IconButton>
+                    </div>
+                    <div className={classes.toolbarEnd}/>
+                </Toolbar>
+            </AppBar>
             <div className={classes.appBarSpacer}/>
             <Drawer
                 className={classes.drawer}

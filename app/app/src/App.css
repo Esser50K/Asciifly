@@ -21,6 +21,7 @@ input:focus {
 }
 
 .description {
+  margin-top: 4vw;
   margin-left: 7vw;
   text-align: left;
   font-size: 0.8vw;

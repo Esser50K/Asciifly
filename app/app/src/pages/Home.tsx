@@ -147,6 +147,18 @@ function Home() {
               <Grid item xs={3}>
                   <YoutubeVideoThumbnail />
               </Grid>
+              <Grid item xs={3}>
+                  <YoutubeVideoThumbnail />
+              </Grid>
+              <Grid item xs={3}>
+                  <YoutubeVideoThumbnail />
+              </Grid>
+              <Grid item xs={3}>
+                  <YoutubeVideoThumbnail />
+              </Grid>
+              <Grid item xs={3}>
+                  <YoutubeVideoThumbnail />
+              </Grid>
             </Grid>
             <div className='description'>
             </div>
