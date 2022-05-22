@@ -1,5 +1,5 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
-import {Grid, Typography} from "@material-ui/core";
+import Grid from "@material-ui/core/Grid";
 import Toast from "../components/Toast";
 import TextInput from "../components/TextInput";
 import ImageInput from "../components/ImageInput";

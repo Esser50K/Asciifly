@@ -14,6 +14,8 @@ import {
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import PlayCircleFilled from "@material-ui/icons/PlayCircleFilled";
+import Box from "@material-ui/core/Box";
+import DonateButton from "../components/DonateButton";
 
 const drawerWidth = 240;
 
@@ -27,6 +29,10 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         appBar: {
             zIndex: theme.zIndex.drawer + 1,
+        },
+        videoUrl: {
+            display: 'flex',
+            alignItems: 'center',
         },
         menuButton: {
             marginRight: theme.spacing(2),
@@ -71,7 +77,7 @@ const useStyles = makeStyles((theme: Theme) =>
             },
         },
         toolbarEnd: {
-            width: '130px',
+            width: '290px',
         },
         appBarSpacer: theme.mixins.toolbar,
         drawer: {
@@ -80,6 +86,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         drawerPaper: {
             width: drawerWidth,
+        },
+        introBox: {
+            margin: theme.spacing(2),
+            padding: theme.spacing(2),
+            background: theme.palette.info.main,
+        },
+        donateButton: {
+            margin: theme.spacing(2, 0, 2, 0)
         },
         content: {
             flexGrow: 1,
@@ -116,19 +130,22 @@ function Layout() {
                             90's YouTube
                         </Typography>
                     </div>
-                    <div className={classes.search}>
-                        <InputBase
-                            placeholder="https://www.youtube.com/watch?v=c7rarQiUmng"
-                            classes={{
-                                root: classes.inputRoot,
-                                input: classes.inputInput,
-                            }}
-                            inputProps={{'aria-label': 'search'}}
-                        />
-                        <IconButton color="inherit" aria-label="convert from url">
-                            <PlayCircleFilled/>
-                        </IconButton>
-                    </div>
+                    <Box className={classes.videoUrl}>
+                        <Typography>YouTube video link:</Typography>
+                        <div className={classes.search}>
+                            <InputBase
+                                placeholder="https://www.youtube.com/watch?v=c7rarQiUmng"
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{'aria-label': 'search'}}
+                            />
+                            <IconButton color="inherit" aria-label="convert from url">
+                                <PlayCircleFilled/>
+                            </IconButton>
+                        </div>
+                    </Box>
                     <div className={classes.toolbarEnd}/>
                 </Toolbar>
             </AppBar>
@@ -141,6 +158,22 @@ function Layout() {
                 }}
             >
                 <div className={classes.appBarSpacer}/>
+                <Box className={classes.introBox}>
+                    <Typography variant="body2">Paste a YouTube video link to ASCIIfy it on the fly!</Typography>
+                </Box>
+                <Container>
+                    <Typography variant="subtitle1">- or -</Typography>
+                </Container>
+                <Box className={classes.introBox}>
+                    <Typography variant="body2">Click to select or drag an image on this box to ASCIIfy it</Typography>
+                </Box>
+                <Container>
+                    <Typography variant="subtitle1">- or -</Typography>
+                    <Box className={classes.donateButton}>
+                        <DonateButton/>
+                    </Box>
+                    <Typography variant="body2">To support my server costs <br/> and development efforts C:</Typography>
+                </Container>
             </Drawer>
             <div className={classes.content}>
                 <div className={classes.appBarSpacer} />
