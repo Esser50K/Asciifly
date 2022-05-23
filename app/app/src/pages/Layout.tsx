@@ -107,6 +107,13 @@ const useStyles = makeStyles((theme: Theme) =>
             paddingLeft: theme.spacing(2),
             paddingRight: theme.spacing(2),
         },
+        convertButton: {
+            paddingRight: theme.spacing(1),
+        },
+        convertButtonPlaceholder: {
+            display: 'inline-flex',
+            width: '35px',
+        }
     }),
 );
 
@@ -168,9 +175,11 @@ function Layout({drawerCollapsed = false}) {
                                     onChange={onYTUrlChange}
                                     value={inputUrl}
                                 />
-                                <IconButton color="inherit" aria-label="convert from url" type="submit">
-                                    <PlayCircleFilled/>
-                                </IconButton>
+                                { inputUrl ?
+                                    <IconButton className={classes.convertButton} size="small" color="inherit" aria-label="convert from url" type="submit">
+                                        <PlayCircleFilled/>
+                                    </IconButton> : <Box className={classes.convertButtonPlaceholder} />
+                                }
                             </form>
                         </div>
                     </Box>
