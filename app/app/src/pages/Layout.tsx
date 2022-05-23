@@ -1,5 +1,5 @@
 import React from "react";
-import {Link, Outlet, useNavigate, useSearchParams} from "react-router-dom";
+import {Outlet, useNavigate, useSearchParams} from "react-router-dom";
 import {
     alpha,
     AppBar,
@@ -110,7 +110,7 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-function Layout() {
+function Layout({drawerCollapsed = false}) {
     let [searchParams, setSearchParams] = useSearchParams();
     let navigate = useNavigate();
     const classes = useStyles();
@@ -155,31 +155,35 @@ function Layout() {
                 </Toolbar>
             </AppBar>
             <div className={classes.appBarSpacer}/>
-            <Drawer
-                className={classes.drawer}
-                variant="permanent"
-                classes={{
-                    paper: classes.drawerPaper,
-                }}
-            >
-                <div className={classes.appBarSpacer}/>
-                <Box className={classes.introBox}>
-                    <Typography variant="body2">Paste a YouTube video link to ASCIIfy it on the fly!</Typography>
-                </Box>
-                <Container>
-                    <Typography variant="subtitle1">- or -</Typography>
-                </Container>
-                <Box className={classes.introBox}>
-                    <Typography variant="body2">Click to select or drag an image on this box to ASCIIfy it</Typography>
-                </Box>
-                <Container>
-                    <Typography variant="subtitle1">- or -</Typography>
-                    <Box className={classes.donateButton}>
-                        <DonateButton/>
+            { !drawerCollapsed &&
+                <Drawer
+                    className={classes.drawer}
+                    variant="permanent"
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                >
+                    <div className={classes.appBarSpacer}/>
+                    <Box className={classes.introBox}>
+                        <Typography variant="body2">Paste a YouTube video link to ASCIIfy it on the fly!</Typography>
                     </Box>
-                    <Typography variant="body2">To support my server costs <br/> and development efforts C:</Typography>
-                </Container>
-            </Drawer>
+                    <Container>
+                        <Typography variant="subtitle1">- or -</Typography>
+                    </Container>
+                    <Box className={classes.introBox}>
+                        <Typography variant="body2">Click to select or drag an image on this box to ASCIIfy
+                            it</Typography>
+                    </Box>
+                    <Container>
+                        <Typography variant="subtitle1">- or -</Typography>
+                        <Box className={classes.donateButton}>
+                            <DonateButton/>
+                        </Box>
+                        <Typography variant="body2">To support my server costs <br/> and development efforts
+                            C:</Typography>
+                    </Container>
+                </Drawer>
+            }
             <div className={classes.content}>
                 <div className={classes.appBarSpacer} />
                 <Container maxWidth="lg" className={classes.container}>

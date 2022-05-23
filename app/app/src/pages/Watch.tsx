@@ -1,6 +1,6 @@
 import {useSearchParams} from "react-router-dom";
 
-function Watch({ match, location }: any) {
+function Watch() {
     let [searchParams, setSearchParams] = useSearchParams();
 
     return (

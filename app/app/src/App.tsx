@@ -13,8 +13,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="watch" element={<Watch />} />
             <Route path="*" element={<NoPage />} />
+          </Route>
+          <Route path="/watch" element={<Layout drawerCollapsed />}>
+            <Route path="*" element={<Watch />} />
           </Route>
         </Routes>
       </BrowserRouter>
