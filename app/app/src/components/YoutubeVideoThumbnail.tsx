@@ -9,10 +9,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         thumbnailContainer: {
             cursor: 'pointer',
-            transition: 'transform 0.2s',
-            '&:hover': {
-                transform: 'scale(1.05)',
-            }
+            border: "4px ridge white",
         },
         thumbnail: {
             backgroundSize: "cover",
@@ -23,6 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 height: 0,
                 paddingBottom: "calc(100% / (16/9))",
             },
+            filter: "blur(1px) saturate(300%)",
             marginBottom: theme.spacing(1.5),
         }
     })

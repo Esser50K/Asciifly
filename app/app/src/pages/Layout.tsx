@@ -9,6 +9,7 @@ import {
     IconButton,
     InputBase,
     makeStyles, Theme,
+    ThemeProvider,
     Toolbar,
     Typography
 } from "@material-ui/core";
@@ -16,6 +17,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import PlayCircleFilled from "@material-ui/icons/PlayCircleFilled";
 import Box from "@material-ui/core/Box";
 import DonateButton from "../components/DonateButton";
+import {createTheme} from "@material-ui/core/styles";
 
 const drawerWidth = 240;
 
@@ -102,10 +104,7 @@ const useStyles = makeStyles((theme: Theme) =>
             overflow: 'auto',
         },
         container: {
-            paddingTop: theme.spacing(4),
-            paddingBottom: theme.spacing(4),
-            paddingLeft: theme.spacing(2),
-            paddingRight: theme.spacing(2),
+            padding: theme.spacing(4, 2, 4, 2),
         },
         convertButton: {
             paddingRight: theme.spacing(1),
@@ -116,6 +115,16 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     }),
 );
+
+const darkTheme = createTheme({
+    palette: {
+        type: 'dark',
+        background: {
+            default: '#000',
+            paper: '#000',
+        },
+    },
+});
 
 function Layout({drawerCollapsed = false}) {
     let [searchParams] = useSearchParams();
@@ -188,33 +197,35 @@ function Layout({drawerCollapsed = false}) {
             </AppBar>
             <div className={classes.appBarSpacer}/>
             { !drawerCollapsed &&
-                <Drawer
-                    className={classes.drawer}
-                    variant="permanent"
-                    classes={{
-                        paper: classes.drawerPaper,
-                    }}
-                >
-                    <div className={classes.appBarSpacer}/>
-                    <Box className={classes.introBox}>
-                        <Typography variant="body2">Paste a YouTube video link to ASCIIfy it on the fly!</Typography>
-                    </Box>
-                    <Container>
-                        <Typography variant="subtitle1">- or -</Typography>
-                    </Container>
-                    <Box className={classes.introBox}>
-                        <Typography variant="body2">Click to select or drag an image on this box to ASCIIfy
-                            it</Typography>
-                    </Box>
-                    <Container>
-                        <Typography variant="subtitle1">- or -</Typography>
-                        <Box className={classes.donateButton}>
-                            <DonateButton/>
+                <ThemeProvider theme={darkTheme}>
+                    <Drawer
+                        className={classes.drawer}
+                        variant="permanent"
+                        classes={{
+                            paper: classes.drawerPaper,
+                        }}
+                    >
+                        <div className={classes.appBarSpacer}/>
+                        <Box className={classes.introBox}>
+                            <Typography variant="body2">Paste a YouTube video link to ASCIIfy it on the fly!</Typography>
                         </Box>
-                        <Typography variant="body2">To support my server costs <br/> and development efforts
-                            C:</Typography>
-                    </Container>
-                </Drawer>
+                        <Container>
+                            <Typography variant="subtitle1">- or -</Typography>
+                        </Container>
+                        <Box className={classes.introBox}>
+                            <Typography variant="body2">Click to select or drag an image on this box to ASCIIfy
+                                it</Typography>
+                        </Box>
+                        <Container>
+                            <Typography variant="subtitle1">- or -</Typography>
+                            <Box className={classes.donateButton}>
+                                <DonateButton/>
+                            </Box>
+                            <Typography variant="body2">To support my server costs <br/> and development efforts
+                                C:</Typography>
+                        </Container>
+                    </Drawer>
+                </ThemeProvider>
             }
             <div className={classes.content}>
                 <div className={classes.appBarSpacer} />
