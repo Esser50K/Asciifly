@@ -17,6 +17,121 @@ function Home() {
     const [downloading, setDownloading] = useState(false)
     const [showToast, setShowToast] = useState(false)
 
+    const featuredVideos = [
+        {
+            id: '1',
+            props: {
+                youtubeId: 'ASJ3iY0-qpQ',
+                title: 'Turning videos into TEXT? 🔠',
+                thumbnailImage: {
+                    src: '/images/video-thumbnails/thumbnail.webp'
+                },
+                avatarImage: {
+                    alt: 'Esser50k',
+                    src: '/images/avatar/Esser50k.jpg'
+                },
+            }
+        },
+        {
+            id: '2',
+            props: {
+                youtubeId: 'ASJ3iY0-qpQ',
+                title: 'Turning videos into TEXT? 🔠',
+                thumbnailImage: {
+                    src: '/images/video-thumbnails/thumbnail.webp'
+                },
+                avatarImage: {
+                    alt: 'Esser50k',
+                    src: '/images/avatar/Esser50k.jpg'
+                },
+            }
+        },
+        {
+            id: '3',
+            props: {
+                youtubeId: 'ASJ3iY0-qpQ',
+                title: 'Turning videos into TEXT? 🔠',
+                thumbnailImage: {
+                    src: '/images/video-thumbnails/thumbnail.webp'
+                },
+                avatarImage: {
+                    alt: 'Esser50k',
+                    src: '/images/avatar/Esser50k.jpg'
+                },
+            }
+        },
+        {
+            id: '4',
+            props: {
+                youtubeId: 'ASJ3iY0-qpQ',
+                title: 'Turning videos into TEXT? 🔠',
+                thumbnailImage: {
+                    src: '/images/video-thumbnails/thumbnail.webp'
+                },
+                avatarImage: {
+                    alt: 'Esser50k',
+                    src: '/images/avatar/Esser50k.jpg'
+                },
+            }
+        },
+        {
+            id: '5',
+            props: {
+                youtubeId: 'ASJ3iY0-qpQ',
+                title: 'Turning videos into TEXT? 🔠',
+                thumbnailImage: {
+                    src: '/images/video-thumbnails/thumbnail.webp'
+                },
+                avatarImage: {
+                    alt: 'Esser50k',
+                    src: '/images/avatar/Esser50k.jpg'
+                },
+            }
+        },
+        {
+            id: '6',
+            props: {
+                youtubeId: 'ASJ3iY0-qpQ',
+                title: 'Turning videos into TEXT? 🔠',
+                thumbnailImage: {
+                    src: '/images/video-thumbnails/thumbnail.webp'
+                },
+                avatarImage: {
+                    alt: 'Esser50k',
+                    src: '/images/avatar/Esser50k.jpg'
+                },
+            }
+        },
+        {
+            id: '7',
+            props: {
+                youtubeId: 'ASJ3iY0-qpQ',
+                title: 'Turning videos into TEXT? 🔠',
+                thumbnailImage: {
+                    src: '/images/video-thumbnails/thumbnail.webp'
+                },
+                avatarImage: {
+                    alt: 'Esser50k',
+                    src: '/images/avatar/Esser50k.jpg'
+                },
+            }
+        },
+        {
+            id: '8',
+            props: {
+                youtubeId: 'ASJ3iY0-qpQ',
+                title: 'Turning videos into TEXT? 🔠',
+                thumbnailImage: {
+                    src: '/images/video-thumbnails/thumbnail.webp'
+                },
+                avatarImage: {
+                    alt: 'Esser50k',
+                    src: '/images/avatar/Esser50k.jpg'
+                },
+            }
+        }
+    ]
+
     const isMobile = (): boolean => {
         return false;
     }
@@ -135,30 +250,13 @@ function Home() {
     return (
         <>
             <Grid container spacing={3}>
-              <Grid item xs={3}>
-                  <YoutubeVideoThumbnail />
-              </Grid>
-              <Grid item xs={3}>
-                  <YoutubeVideoThumbnail />
-              </Grid>
-              <Grid item xs={3}>
-                  <YoutubeVideoThumbnail />
-              </Grid>
-              <Grid item xs={3}>
-                  <YoutubeVideoThumbnail />
-              </Grid>
-              <Grid item xs={3}>
-                  <YoutubeVideoThumbnail />
-              </Grid>
-              <Grid item xs={3}>
-                  <YoutubeVideoThumbnail />
-              </Grid>
-              <Grid item xs={3}>
-                  <YoutubeVideoThumbnail />
-              </Grid>
-              <Grid item xs={3}>
-                  <YoutubeVideoThumbnail />
-              </Grid>
+                {
+                    featuredVideos.map(featuredVideo => (
+                        <Grid key={featuredVideo.id} item xs={3}>
+                            <YoutubeVideoThumbnail {...featuredVideo.props} />
+                        </Grid>
+                    ))
+                }
             </Grid>
             <div className='description'>
             </div>

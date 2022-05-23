@@ -7,7 +7,6 @@ import Typography from "@material-ui/core/Typography";
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         thumbnail: {
-            background: "url('/images/video-thumbnails/thumbnail.webp')",
             backgroundSize: "cover",
             '&::before': {
                 content: "''",
@@ -21,19 +20,31 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 )
 
-function YoutubeVideoThumbnail() {
+interface YoutubeVideoThumbnailProps {
+    youtubeId: string
+    title: string
+    thumbnailImage: {
+        src: string
+    }
+    avatarImage: {
+        alt: string
+        src: string
+    }
+}
+
+function YoutubeVideoThumbnail({ youtubeId, title, thumbnailImage, avatarImage }: YoutubeVideoThumbnailProps) {
     const classes = useStyles();
 
     return (
         <Box bgcolor="background.paper">
-            <Box className={classes.thumbnail} />
+            <Box className={classes.thumbnail} style={{backgroundImage: `url('${thumbnailImage.src}')`}} />
             <Grid container spacing={1}>
                 <Grid item xs={2}>
-                    <Avatar alt="Remy Sharp" src="/images/avatar/Esser50k.jpg" />
+                    <Avatar alt={avatarImage.alt} src={avatarImage.src} />
                 </Grid>
                 <Grid item xs={10}>
                     <Typography variant="subtitle2" color="textPrimary">
-                        Turning videos into TEXT? 🔠
+                        { title }
                     </Typography>
                 </Grid>
             </Grid>
