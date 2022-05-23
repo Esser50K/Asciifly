@@ -3,6 +3,7 @@ import Box from "@material-ui/core/Box";
 import Avatar from "@material-ui/core/Avatar";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import {Link} from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -36,19 +37,22 @@ function YoutubeVideoThumbnail({ youtubeId, title, thumbnailImage, avatarImage }
     const classes = useStyles();
 
     return (
-        <Box bgcolor="background.paper">
-            <Box className={classes.thumbnail} style={{backgroundImage: `url('${thumbnailImage.src}')`}} />
-            <Grid container spacing={1}>
-                <Grid item xs={2}>
-                    <Avatar alt={avatarImage.alt} src={avatarImage.src} />
+        <Link to={`/watch?v=${youtubeId}`}>
+            <Box bgcolor="background.paper">
+                <Box className={classes.thumbnail} style={{backgroundImage: `url('${thumbnailImage.src}')`}} />
+                <Grid container spacing={1}>
+                    <Grid item xs={2}>
+                        <Avatar alt={avatarImage.alt} src={avatarImage.src} />
+                    </Grid>
+                    <Grid item xs={10}>
+                        <Typography variant="subtitle2" color="textPrimary">
+                            { title }
+                        </Typography>
+                    </Grid>
                 </Grid>
-                <Grid item xs={10}>
-                    <Typography variant="subtitle2" color="textPrimary">
-                        { title }
-                    </Typography>
-                </Grid>
-            </Grid>
-        </Box>
+            </Box>
+        </Link>
+
     )
 }
 

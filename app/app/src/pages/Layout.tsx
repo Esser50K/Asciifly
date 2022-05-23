@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import {Link, Outlet, useNavigate, useSearchParams} from "react-router-dom";
 import {
     alpha,
     AppBar,
@@ -48,6 +48,7 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'none',
             [theme.breakpoints.up('sm')]: {
                 display: 'block',
+                cursor: 'pointer',
             },
         },
         search: {
@@ -110,7 +111,11 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 function Layout() {
+    let [searchParams, setSearchParams] = useSearchParams();
+    let navigate = useNavigate();
     const classes = useStyles();
+
+    const navigateToHome = () => navigate('/');
 
     return (
         <div className={classes.root}>
@@ -126,7 +131,7 @@ function Layout() {
                         >
                             <MenuIcon/>
                         </IconButton>
-                        <Typography className={classes.title} variant="h6" noWrap>
+                        <Typography onClick={navigateToHome} className={classes.title} variant="h6" noWrap>
                             90's YouTube
                         </Typography>
                     </div>
@@ -134,7 +139,7 @@ function Layout() {
                         <Typography>YouTube video link:</Typography>
                         <div className={classes.search}>
                             <InputBase
-                                placeholder="https://www.youtube.com/watch?v=c7rarQiUmng"
+                                placeholder={`https://www.youtube.com/watch?v=${searchParams.get('v') || 'c7rarQiUmng'}`}
                                 classes={{
                                     root: classes.inputRoot,
                                     input: classes.inputInput,

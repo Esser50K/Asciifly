@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="output" element={<Watch />} />
+            <Route path="watch" element={<Watch />} />
             <Route path="*" element={<NoPage />} />
           </Route>
         </Routes>
