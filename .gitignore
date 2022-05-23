@@ -2,3 +2,6 @@ server/__pycache__/
 app/app/node_modules
 *.py[cod]
 *.c
+
+#Files from intellij
+.idea
