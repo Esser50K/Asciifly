@@ -1,4 +1,4 @@
-import React from "react";
+import React, {FormEvent, useEffect, useState} from "react";
 import {Outlet, useNavigate, useSearchParams} from "react-router-dom";
 import {
     alpha,
@@ -111,11 +111,30 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 function Layout({drawerCollapsed = false}) {
-    let [searchParams, setSearchParams] = useSearchParams();
+    let [searchParams] = useSearchParams();
     let navigate = useNavigate();
+    const [inputUrl, setInputUrl] = useState("")
+    const [youtubeUrl, setYoutubeUrl] = useState("")
     const classes = useStyles();
 
     const navigateToHome = () => navigate('/');
+
+    const onYTUrlSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setYoutubeUrl(inputUrl)
+        const regexp = `https:\/\/www\.youtube\.com\/watch\?v=`;
+
+        const path = inputUrl.replace(regexp, '/watch?v=');
+        setInputUrl('')
+        navigate(path)
+    }
+
+    const onYTUrlChange = (e: any) => setInputUrl(e.target.value)
+
+    useEffect(() => {
+        setYoutubeUrl(`https://www.youtube.com/watch?v=${searchParams.get('v') || 'c7rarQiUmng'}`)
+    }, [searchParams])
 
     return (
         <div className={classes.root}>
@@ -138,17 +157,21 @@ function Layout({drawerCollapsed = false}) {
                     <Box className={classes.videoUrl}>
                         <Typography>YouTube video link:</Typography>
                         <div className={classes.search}>
-                            <InputBase
-                                placeholder={`https://www.youtube.com/watch?v=${searchParams.get('v') || 'c7rarQiUmng'}`}
-                                classes={{
-                                    root: classes.inputRoot,
-                                    input: classes.inputInput,
-                                }}
-                                inputProps={{'aria-label': 'search'}}
-                            />
-                            <IconButton color="inherit" aria-label="convert from url">
-                                <PlayCircleFilled/>
-                            </IconButton>
+                            <form onSubmit={onYTUrlSubmit}>
+                                <InputBase
+                                    placeholder={youtubeUrl}
+                                    classes={{
+                                        root: classes.inputRoot,
+                                        input: classes.inputInput,
+                                    }}
+                                    inputProps={{'aria-label': 'search'}}
+                                    onChange={onYTUrlChange}
+                                    value={inputUrl}
+                                />
+                                <IconButton color="inherit" aria-label="convert from url" type="submit">
+                                    <PlayCircleFilled/>
+                                </IconButton>
+                            </form>
                         </div>
                     </Box>
                     <div className={classes.toolbarEnd}/>
