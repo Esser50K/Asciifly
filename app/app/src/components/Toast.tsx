@@ -6,7 +6,7 @@ interface ToastProps {
 
 function Toast(props: ToastProps) {
     return (
-        <div className='toast-container top-left'>
+        <div className='toast-container bottom-left'>
             <div className='notification'>
                 {props.text}
             </div>

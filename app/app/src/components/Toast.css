@@ -5,8 +5,8 @@
     z-index: 99999;
 }
 
-.top-left {
-	top: 12px;
+.bottom-left {
+	bottom: 12px;
 	left: 12px;
 	transition: transform .6s ease-in;
 	animation: toast-in-left .7s;
