@@ -1,8 +1,7 @@
 import React, {FormEvent, useEffect, useState} from "react";
 import {Outlet, useNavigate, useSearchParams} from "react-router-dom";
 import {
-    alpha,
-    AppBar,
+    AppBar, Button,
     Container, createStyles,
     CssBaseline,
     Drawer,
@@ -53,13 +52,12 @@ const useStyles = makeStyles((theme: Theme) =>
                 cursor: 'pointer',
             },
         },
+        form: {
+            display: 'flex',
+        },
         search: {
             position: 'relative',
             borderRadius: theme.shape.borderRadius,
-            backgroundColor: alpha(theme.palette.common.white, 0.15),
-            '&:hover': {
-                backgroundColor: alpha(theme.palette.common.white, 0.25),
-            },
             marginRight: theme.spacing(2),
             marginLeft: 0,
             width: '100%',
@@ -69,10 +67,12 @@ const useStyles = makeStyles((theme: Theme) =>
             },
         },
         inputRoot: {
-            color: 'inherit',
+            color: theme.palette.text.primary,
+            background: theme.palette.background.paper,
+            border: '4px ridge white',
         },
         inputInput: {
-            padding: theme.spacing(1, 1, 1, 1),
+            padding: theme.spacing(0.5, 1, 0.5, 1),
             transition: theme.transitions.create('width'),
             width: '100%',
             [theme.breakpoints.up('md')]: {
@@ -89,6 +89,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         drawerPaper: {
             width: drawerWidth,
+            paddingTop: theme.spacing(2.5),
         },
         introBox: {
             margin: theme.spacing(2),
@@ -107,11 +108,22 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(4, 2, 4, 2),
         },
         convertButton: {
-            paddingRight: theme.spacing(1),
+            margin: 0,
+            height: '48px',
+            width: '40px',
+            borderWidth: '4px',
+            borderStyle: 'outset',
+            borderColors: theme.palette.secondary.main,
+            background: theme.palette.secondary.main,
+            color: theme.palette.primary.main,
+            '&:hover': {
+                background: theme.palette.secondary.main,
+            },
         },
         convertButtonPlaceholder: {
+            paddingLeft: theme.spacing(1),
             display: 'inline-flex',
-            width: '35px',
+            width: '64px',
         }
     }),
 );
@@ -123,6 +135,13 @@ const darkTheme = createTheme({
             default: '#000',
             paper: '#000',
         },
+    },
+    typography: {
+        fontFamily: "'Pixelated Times New Roman', 'Times New Roman'",
+        fontSize: 24,
+        allVariants: {
+            lineHeight: 0.74,
+        }
     },
 });
 
@@ -173,7 +192,7 @@ function Layout({drawerCollapsed = false}) {
                     <Box className={classes.videoUrl}>
                         <Typography>YouTube video link:</Typography>
                         <div className={classes.search}>
-                            <form onSubmit={onYTUrlSubmit}>
+                            <form className={classes.form} onSubmit={onYTUrlSubmit}>
                                 <InputBase
                                     placeholder={youtubeUrl}
                                     classes={{
@@ -185,9 +204,9 @@ function Layout({drawerCollapsed = false}) {
                                     value={inputUrl}
                                 />
                                 { inputUrl ?
-                                    <IconButton className={classes.convertButton} size="small" color="inherit" aria-label="convert from url" type="submit">
+                                    <Button className={classes.convertButton} variant="outlined" size="small" color="inherit" aria-label="convert from url" type="submit">
                                         <PlayCircleFilled/>
-                                    </IconButton> : <Box className={classes.convertButtonPlaceholder} />
+                                    </Button> : <Box className={classes.convertButtonPlaceholder} />
                                 }
                             </form>
                         </div>
