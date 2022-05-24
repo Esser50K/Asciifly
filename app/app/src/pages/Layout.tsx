@@ -96,6 +96,12 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(2),
             background: theme.palette.info.main,
         },
+        donateContainer: {
+            marginTop: theme.spacing(4),
+            display: 'grid',
+            justifyContent: 'center',
+            justifyItems: 'center',
+        },
         donateButton: {
             margin: theme.spacing(2, 0, 2, 0)
         },
@@ -235,8 +241,8 @@ function Layout({drawerCollapsed = false}) {
                             <Typography variant="body2">Click to select or drag an image on this box to ASCIIfy
                                 it</Typography>
                         </Box>
-                        <Container>
-                            <Typography variant="subtitle1">- or -</Typography>
+                        <Container className={classes.donateContainer}>
+                            <img src="/images/moneyfall.gif" alt="Money falling" />
                             <Box className={classes.donateButton}>
                                 <DonateButton/>
                             </Box>
